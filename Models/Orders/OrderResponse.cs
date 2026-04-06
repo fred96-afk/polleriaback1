@@ -8,7 +8,8 @@ public record OrderResponse(
     int? DeliveryUserId,
     decimal TotalAmount,
     List<OrderDetailResponse> Details,
-    string? PaymentUrl = null
+    string? PaymentUrl = null,
+    string? PdfUrl = null
 );
 
 public record OrderDetailResponse(

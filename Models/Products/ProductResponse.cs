@@ -4,5 +4,7 @@ public record ProductResponse(
     int Id,
     string Name,
     string? Description,
-    decimal BasePrice
+    decimal BasePrice,
+    int? CategoryId,
+    string? ImageUrl
 );

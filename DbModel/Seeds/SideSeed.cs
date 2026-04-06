@@ -9,7 +9,8 @@ public static class SideSeed
     {
         modelBuilder.Entity<Side>().HasData(
             new Side { Id = 1, Name = "Ensalada Dulce", Type = SideType.Sweet, Price = 5.0m },
-            new Side { Id = 2, Name = "Ensalada Salada", Type = SideType.Savory, Price = 5.0m }
+            new Side { Id = 2, Name = "Ensalada Salada", Type = SideType.Savory, Price = 5.0m },
+            new Side { Id = 3, Name = "Papas Fritas", Type = SideType.Savory, Price = 8.0m }
         );
     }
 }

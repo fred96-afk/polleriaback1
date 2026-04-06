@@ -1,6 +1,6 @@
 using IBusiness;
-using IBusiness.Security;
 using IRepository;
+using IBusiness.Security;
 using Microsoft.AspNetCore.Mvc;
 using Models.Users;
 
@@ -9,9 +9,10 @@ namespace Polleria.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController(
-    IUserRepository userRepository, 
+    IUserBusiness userBusiness,
+    IUserRepository userRepository,
     IRoleRepository roleRepository,
-    IPasswordHasher passwordHasher, 
+    IPasswordHasher passwordHasher,
     IJwtService jwtService) : ControllerBase
 {
     [HttpPost("login")]
@@ -30,6 +31,19 @@ public class AuthController(
 
         var token = jwtService.GenerateToken(user, roleName);
         return Ok(new { Token = token });
+    }
+
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] UserRequest request)
+    {
+        var users = await userRepository.FindAsync(u => u.Email == request.Email);
+        if (users.Any())
+        {
+            return BadRequest("El email ya está registrado.");
+        }
+
+        var user = await userBusiness.CreateAsync(request);
+        return Ok(user);
     }
 }
 

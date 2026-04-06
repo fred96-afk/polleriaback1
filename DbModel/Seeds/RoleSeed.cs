@@ -10,7 +10,8 @@ public static class RoleSeed
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "Administrador" },
             new Role { Id = 2, Name = "Mozo" },
-            new Role { Id = 3, Name = "Delivery" }
+            new Role { Id = 3, Name = "Delivery" },
+            new Role { Id = 4, Name = "Cliente" }
         );
     }
 }

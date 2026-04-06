@@ -50,7 +50,6 @@ public class MercadoPagoBusiness : IMercadoPagoBusiness
             },
             AutoReturn = "approved",
             BinaryMode = true,
-            NotificationUrl = "https://tu-api.com/api/payments/webhook",
             PaymentMethods = new PreferencePaymentMethodsRequest
             {
                 Installments = 1

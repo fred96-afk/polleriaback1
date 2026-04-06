@@ -54,6 +54,59 @@ namespace Polleria.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Banners");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ImageUrl = "https://example.com/banner1.jpg",
+                            IsActive = true,
+                            Order = 1,
+                            Subtitle = "Prueba el mejor pollo a la brasa",
+                            Title = "¡Bienvenido!"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ImageUrl = "https://example.com/banner2.jpg",
+                            IsActive = true,
+                            Order = 2,
+                            Subtitle = "2 Pollos x 110 soles",
+                            Title = "Oferta del Mes"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ImageUrl = "https://example.com/banner3.jpg",
+                            IsActive = true,
+                            Order = 3,
+                            Subtitle = "Solo en zonas seleccionadas",
+                            Title = "Delivery Gratis"
+                        });
+                });
+
+            modelBuilder.Entity("DbModel.Tables.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("DbModel.Tables.Client", b =>
@@ -80,6 +133,29 @@ namespace Polleria.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Clients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Address = "Av. Siempre Viva 123",
+                            Name = "Juan Perez",
+                            Phone = "987654321"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Address = "Calle Real 456",
+                            Name = "Maria Garcia",
+                            Phone = "912345678"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Address = "Urb. Los Rosales 789",
+                            Name = "Carlos Sanchez",
+                            Phone = "954321098"
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.Invoice", b =>
@@ -120,6 +196,32 @@ namespace Polleria.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Invoices");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ExternalId = "EXT001",
+                            Number = 1,
+                            OrderId = 1,
+                            Serie = "F001"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ExternalId = "EXT002",
+                            Number = 2,
+                            OrderId = 2,
+                            Serie = "F001"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ExternalId = "EXT003",
+                            Number = 3,
+                            OrderId = 3,
+                            Serie = "F001"
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.Order", b =>
@@ -149,6 +251,33 @@ namespace Polleria.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Orders");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            ClientId = 1,
+                            DeliveryUserId = 3,
+                            OrderDate = new DateTime(2026, 4, 6, 14, 30, 47, 575, DateTimeKind.Utc).AddTicks(7823),
+                            TotalAmount = 65.0m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            ClientId = 2,
+                            OrderDate = new DateTime(2026, 4, 6, 14, 30, 47, 575, DateTimeKind.Utc).AddTicks(7830),
+                            TotalAmount = 35.0m,
+                            UserId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            ClientId = 3,
+                            OrderDate = new DateTime(2026, 4, 6, 14, 30, 47, 575, DateTimeKind.Utc).AddTicks(7834),
+                            TotalAmount = 20.0m,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.OrderDetail", b =>
@@ -186,6 +315,38 @@ namespace Polleria.Migrations
                     b.HasIndex("SideId");
 
                     b.ToTable("OrderDetails");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            OrderId = 1,
+                            ProductId = 1,
+                            Quantity = 1,
+                            SideId = 3,
+                            Subtotal = 65.0m,
+                            UnitPrice = 65.0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            OrderId = 2,
+                            ProductId = 2,
+                            Quantity = 1,
+                            SideId = 1,
+                            Subtotal = 35.0m,
+                            UnitPrice = 35.0m
+                        },
+                        new
+                        {
+                            Id = 3,
+                            OrderId = 3,
+                            ProductId = 3,
+                            Quantity = 1,
+                            SideId = 2,
+                            Subtotal = 20.0m,
+                            UnitPrice = 20.0m
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.Payment", b =>
@@ -222,6 +383,35 @@ namespace Polleria.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("Payments");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Amount = 65.0m,
+                            OrderId = 1,
+                            PaymentMethod = "Cash",
+                            Status = "Paid",
+                            TransactionId = "TXN001"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Amount = 35.0m,
+                            OrderId = 2,
+                            PaymentMethod = "Card",
+                            Status = "Paid",
+                            TransactionId = "TXN002"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Amount = 20.0m,
+                            OrderId = 3,
+                            PaymentMethod = "Yape",
+                            Status = "Paid",
+                            TransactionId = "TXN003"
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.Product", b =>
@@ -235,6 +425,9 @@ namespace Polleria.Migrations
                     b.Property<decimal>("BasePrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -253,7 +446,36 @@ namespace Polleria.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            BasePrice = 65.0m,
+                            Description = "Pollo entero con papas y ensalada",
+                            ImageUrl = "https://example.com/pollo_entero.jpg",
+                            Name = "Pollo a la Brasa (Entero)",
+                            SalePrice = 60.0m
+                        },
+                        new
+                        {
+                            Id = 2,
+                            BasePrice = 35.0m,
+                            Description = "Medio pollo con papas y ensalada",
+                            ImageUrl = "https://example.com/medio_pollo.jpg",
+                            Name = "Medio Pollo"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            BasePrice = 20.0m,
+                            Description = "Un cuarto de pollo con papas y ensalada",
+                            ImageUrl = "https://example.com/cuarto_pollo.jpg",
+                            Name = "Un Cuarto de Pollo"
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.Role", b =>
@@ -288,6 +510,11 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             Name = "Delivery"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Cliente"
                         });
                 });
 
@@ -332,6 +559,13 @@ namespace Polleria.Migrations
                             Name = "Ensalada Salada",
                             Price = 5.0m,
                             Type = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Papas Fritas",
+                            Price = 8.0m,
+                            Type = 1
                         });
                 });
 
@@ -364,6 +598,32 @@ namespace Polleria.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@empresa.com",
+                            Name = "Admin",
+                            PasswordHash = "$2a$11$g9p.pmoBRECs8uL3nf0ns.ljh.I/VXgF9Mw/aT6LeVEGfz8oQ/QYG",
+                            RoleId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Email = "mozo1@example.com",
+                            Name = "Mozo 1",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
+                            RoleId = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Email = "delivery1@example.com",
+                            Name = "Delivery 1",
+                            PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
+                            RoleId = 3
+                        });
                 });
 
             modelBuilder.Entity("DbModel.Tables.Invoice", b =>
@@ -400,6 +660,21 @@ namespace Polleria.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DbModel.Tables.Product", b =>
+                {
+                    b.HasOne("DbModel.Tables.Category", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("DbModel.Tables.Category", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

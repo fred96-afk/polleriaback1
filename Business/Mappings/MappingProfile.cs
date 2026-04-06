@@ -6,6 +6,7 @@ using Models.Sides;
 using Models.Users;
 using Models.Roles;
 using Models.Orders;
+using Models.Categories;
 
 namespace Business.Mappings;
 
@@ -18,6 +19,9 @@ public class MappingProfile : Profile
 
         CreateMap<Product, ProductResponse>();
         CreateMap<ProductRequest, Product>();
+
+        CreateMap<Category, CategoryResponse>();
+        CreateMap<CategoryRequest, Category>();
 
         CreateMap<Side, SideResponse>();
         CreateMap<SideRequest, Side>();

@@ -19,14 +19,14 @@ public class ProductsController(IProductBusiness business) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(ProductRequest request)
+    public async Task<IActionResult> Create([FromForm] ProductRequest request)
     {
         var result = await business.CreateAsync(request);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
     }
 
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, ProductRequest request)
+    public async Task<IActionResult> Update(int id, [FromForm] ProductRequest request)
     {
         var success = await business.UpdateAsync(id, request);
         return success ? NoContent() : NotFound();

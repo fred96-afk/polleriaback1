@@ -10,7 +10,8 @@ public class OrderBusiness(
     IOrderDetailRepository detailRepository,
     IProductRepository productRepository,
     ISideRepository sideRepository,
-    IMercadoPagoBusiness mercadoPagoBusiness) : IOrderBusiness
+    IMercadoPagoBusiness mercadoPagoBusiness,
+    INubeFactBusiness nubeFactBusiness) : IOrderBusiness
 {
     public async Task<IEnumerable<OrderResponse>> GetAllAsync()
     {
@@ -90,7 +91,24 @@ public class OrderBusiness(
         var detailsWithIncludes = await detailRepository.GetByOrderIdWithIncludesAsync(order.Id);
         var orderResponse = MapToResponse(order, detailsWithIncludes);
 
-        // Generar enlace de pago
+        // Si es una venta de Punto de Venta (POS), generamos comprobante nubefact
+        if (request.IsPos)
+        {
+            try 
+            {
+                // Intentamos generar el comprobante pero con un timeout corto para no bloquear al usuario
+                var result = await nubeFactBusiness.GenerateInvoiceAsync(order.Id);
+                return orderResponse with { PdfUrl = result.PdfUrl };
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error preventivo NubeFact: {ex.Message}");
+                // Retornamos el pedido aunque no se haya generado el PDF para evitar el error 500
+                return orderResponse;
+            }
+        }
+
+        // Generar enlace de pago para ventas online
         var paymentUrl = await mercadoPagoBusiness.CreatePaymentPreferenceAsync(orderResponse);
 
         return orderResponse with { PaymentUrl = paymentUrl };

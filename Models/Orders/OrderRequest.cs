@@ -4,7 +4,8 @@ public record OrderRequest(
     int? ClientId,
     int UserId,
     int? DeliveryUserId,
-    List<OrderDetailRequest> Details
+    List<OrderDetailRequest> Details,
+    bool IsPos = false
 );
 
 public record OrderDetailRequest(

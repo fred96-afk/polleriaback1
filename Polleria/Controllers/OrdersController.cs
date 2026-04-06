@@ -6,7 +6,7 @@ namespace Polleria.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class OrdersController(IOrderBusiness business) : ControllerBase
+public class OrdersController(IOrderBusiness business, INubeFactBusiness nubeFactBusiness) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await business.GetAllAsync());
@@ -23,6 +23,13 @@ public class OrdersController(IOrderBusiness business) : ControllerBase
     {
         var result = await business.CreateAsync(request);
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+    }
+
+    [HttpPost("{id}/invoice")]
+    public async Task<IActionResult> GenerateInvoice(int id)
+    {
+        var result = await nubeFactBusiness.GenerateInvoiceAsync(id);
+        return result.Success ? Ok(new { pdfUrl = result.PdfUrl }) : BadRequest(result.Error);
     }
 
     [HttpDelete("{id}")]

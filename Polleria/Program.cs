@@ -19,6 +19,18 @@ builder.Services.AddDbContext<PolleriaDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("Polleria")));
 
+// --- 1.1 CORS ---
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAngularApp",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4200")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        });
+});
+
 // --- 2. AutoMapper ---
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -27,6 +39,7 @@ builder.Services.AddScoped<IClientRepository, ClientRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<ISideRepository, SideRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -37,6 +50,7 @@ builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IClientBusiness, ClientBusiness>();
 builder.Services.AddScoped<IOrderBusiness, OrderBusiness>();
 builder.Services.AddScoped<IProductBusiness, ProductBusiness>();
+builder.Services.AddScoped<ICategoryBusiness, CategoryBusiness>();
 builder.Services.AddScoped<IRoleBusiness, RoleBusiness>();
 builder.Services.AddScoped<ISideBusiness, SideBusiness>();
 builder.Services.AddScoped<IUserBusiness, UserBusiness>();
@@ -86,6 +100,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();
 app.UseAuthorization();

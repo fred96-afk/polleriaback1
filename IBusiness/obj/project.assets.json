@@ -236,7 +236,10 @@
         },
         "runtime": {
           "bin/placeholder/Models.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.AspNetCore.App"
+        ]
       }
     }
   },
@@ -621,11 +624,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/edgardo/Documentos/Polleria/Polleria/IBusiness/IBusiness.csproj",
+      "projectUniqueName": "/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/IBusiness.csproj",
       "projectName": "IBusiness",
-      "projectPath": "/home/edgardo/Documentos/Polleria/Polleria/IBusiness/IBusiness.csproj",
+      "projectPath": "/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/IBusiness.csproj",
       "packagesPath": "/home/edgardo/.nuget/packages/",
-      "outputPath": "/home/edgardo/Documentos/Polleria/Polleria/IBusiness/obj/",
+      "outputPath": "/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -640,11 +643,11 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/home/edgardo/Documentos/Polleria/Polleria/IRepository/IRepository.csproj": {
-              "projectPath": "/home/edgardo/Documentos/Polleria/Polleria/IRepository/IRepository.csproj"
+            "/home/edgardo/Documentos/Polleria/polleriaback/IRepository/IRepository.csproj": {
+              "projectPath": "/home/edgardo/Documentos/Polleria/polleriaback/IRepository/IRepository.csproj"
             },
-            "/home/edgardo/Documentos/Polleria/Polleria/Models/Models.csproj": {
-              "projectPath": "/home/edgardo/Documentos/Polleria/Polleria/Models/Models.csproj"
+            "/home/edgardo/Documentos/Polleria/polleriaback/Models/Models.csproj": {
+              "projectPath": "/home/edgardo/Documentos/Polleria/polleriaback/Models/Models.csproj"
             }
           }
         }
@@ -653,7 +656,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net8.0": {
@@ -683,7 +692,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.125/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.104/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

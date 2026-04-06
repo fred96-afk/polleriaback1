@@ -56,10 +56,25 @@ public class PolleriaDbContext : DbContext
             .HasForeignKey(od => od.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        // Product - Category
+        modelBuilder.Entity<Product>()
+            .HasOne(p => p.Category)
+            .WithMany(c => c.Products)
+            .HasForeignKey(p => p.CategoryId)
+            .OnDelete(DeleteBehavior.SetNull);
+
         // Seeding
         RoleSeed.Seed(modelBuilder);
+        UserSeed.Seed(modelBuilder);
+        ClientSeed.Seed(modelBuilder);
         SideSeed.Seed(modelBuilder);
-        }
+        ProductSeed.Seed(modelBuilder);
+        BannerSeed.Seed(modelBuilder);
+        OrderSeed.Seed(modelBuilder);
+        OrderDetailSeed.Seed(modelBuilder);
+        PaymentSeed.Seed(modelBuilder);
+        InvoiceSeed.Seed(modelBuilder);
+    }
 
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
         {
