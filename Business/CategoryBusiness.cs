@@ -2,6 +2,7 @@ using DbModel.Tables;
 using IBusiness;
 using IRepository;
 using Models.Categories;
+using Models.Common;
 
 namespace Business;
 
@@ -11,6 +12,15 @@ public class CategoryBusiness(ICategoryRepository repository, ICloudinaryService
     {
         var entities = await repository.GetAllAsync();
         return entities.Select(e => new CategoryResponse(e.Id, e.Name, e.Description, e.ImageUrl));
+    }
+
+    public async Task<PagedResponse<CategoryResponse>> GetPagedAsync(PaginationParams pagination)
+    {
+        var (items, totalCount) = await repository.GetPagedAsync(pagination.PageNumber, pagination.PageSize);
+        var dtos = items.Select(e => new CategoryResponse(e.Id, e.Name, e.Description, e.ImageUrl));
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pagination.PageSize);
+
+        return new PagedResponse<CategoryResponse>(dtos, totalCount, totalPages, pagination.PageNumber, pagination.PageSize);
     }
 
     public async Task<CategoryResponse?> GetByIdAsync(int id)

@@ -21,15 +21,29 @@ public class ClientsController(IClientBusiness business) : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(ClientRequest request)
     {
-        var result = await business.CreateAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        try
+        {
+            var result = await business.CreateAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, ClientRequest request)
     {
-        var success = await business.UpdateAsync(id, request);
-        return success ? NoContent() : NotFound();
+        try
+        {
+            var success = await business.UpdateAsync(id, request);
+            return success ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]

@@ -7,6 +7,7 @@ using Models.Users;
 using Models.Roles;
 using Models.Orders;
 using Models.Categories;
+using Models.Banners;
 
 namespace Business.Mappings;
 
@@ -36,5 +37,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Details, opt => opt.Ignore()); // Se mapea manualmente o con sub-mapeo
         
         CreateMap<OrderDetail, OrderDetailResponse>();
+
+        CreateMap<Banner, BannerResponse>();
+        CreateMap<BannerRequest, Banner>()
+            .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
     }
 }

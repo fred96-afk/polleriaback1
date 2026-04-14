@@ -50,4 +50,25 @@ public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return await _context.SaveChangesAsync();
     }
+
+    public virtual async Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(
+        int pageNumber,
+        int pageSize,
+        Expression<Func<T, bool>>? filter = null)
+    {
+        var query = _dbSet.AsQueryable();
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
 }

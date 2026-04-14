@@ -1,6 +1,7 @@
 using IBusiness;
 using Microsoft.AspNetCore.Mvc;
 using Models.Categories;
+using Models.Common;
 
 namespace Polleria.Controllers;
 
@@ -10,6 +11,10 @@ public class CategoriesController(ICategoryBusiness business) : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await business.GetAllAsync());
+
+    [HttpGet("paged")]
+    public async Task<IActionResult> GetPaged([FromQuery] PaginationParams pagination) 
+        => Ok(await business.GetPagedAsync(pagination));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)

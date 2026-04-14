@@ -10,13 +10,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Repository;
+using Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- 1. Database Connection ---
 builder.Services.AddDbContext<PolleriaDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("connectionstringsomee"),
+        builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("Polleria")));
 
 // --- 1.1 CORS ---
@@ -45,6 +46,7 @@ builder.Services.AddScoped<ISideRepository, SideRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
+builder.Services.AddScoped<IBannerRepository, BannerRepository>();
 
 // --- 4. Business Services ---
 builder.Services.AddScoped<IClientBusiness, ClientBusiness>();
@@ -54,9 +56,17 @@ builder.Services.AddScoped<ICategoryBusiness, CategoryBusiness>();
 builder.Services.AddScoped<IRoleBusiness, RoleBusiness>();
 builder.Services.AddScoped<ISideBusiness, SideBusiness>();
 builder.Services.AddScoped<IUserBusiness, UserBusiness>();
+builder.Services.AddScoped<IBannerBusiness, BannerBusiness>();
+builder.Services.AddScoped<ICatalogoBusiness, CatalogoBusiness>();
 builder.Services.AddScoped<IMercadoPagoBusiness, MercadoPagoBusiness>();
 builder.Services.AddScoped<INubeFactBusiness, NubeFactBusiness>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IPusherService, PusherService>();
+builder.Services.AddScoped<IReportBusiness, ReportBusiness>();
+builder.Services.AddScoped<IDashboardBusiness, DashboardBusiness>();
+
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddHttpClient();
 

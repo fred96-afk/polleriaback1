@@ -34,6 +34,7 @@ public class NubeFactBusiness(
 
         var clientName = client?.Name ?? "CLIENTE GENERICO";
         var clientEmail = "correo@ejemplo.com"; 
+        var clientDocument = ResolveClientDocument(client);
 
         var total = Math.Round(order.TotalAmount, 2);
         var totalGravada = Math.Round(total / 1.18m, 2);
@@ -46,8 +47,8 @@ public class NubeFactBusiness(
             serie = "BBB1",
             numero = "0",
             sunat_transaction = "1",
-            cliente_tipo_de_documento = "1", // DNI
-            cliente_numero_de_documento = "00000000",
+            cliente_tipo_de_documento = clientDocument.TypeCode,
+            cliente_numero_de_documento = clientDocument.Number,
             cliente_denominacion = clientName,
             cliente_direccion = client?.Address ?? "-",
             cliente_email = clientEmail,
@@ -132,6 +133,28 @@ public class NubeFactBusiness(
         }
 
         return new NubeFactResult(false, Error: "Error desconocido al procesar NubeFact.");
+    }
+
+    private static (string TypeCode, string Number) ResolveClientDocument(Client? client)
+    {
+        if (client == null)
+        {
+            return ("1", "00000000");
+        }
+
+        if (string.IsNullOrWhiteSpace(client.DocumentType) || string.IsNullOrWhiteSpace(client.DocumentNumber))
+        {
+            throw new InvalidOperationException("El cliente no tiene tipo y numero de documento registrados.");
+        }
+
+        var typeCode = client.DocumentType.Trim().ToUpperInvariant() switch
+        {
+            "DNI" => "1",
+            "RUC" => "6",
+            _ => throw new InvalidOperationException("El tipo de documento del cliente no es valido para NubeFact.")
+        };
+
+        return (typeCode, client.DocumentNumber.Trim().ToUpperInvariant());
     }
 
     private class NubeFactResponse

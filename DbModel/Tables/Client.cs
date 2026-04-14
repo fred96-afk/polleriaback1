@@ -14,6 +14,12 @@ public class Client
     [MaxLength(20)]
     public string? Phone { get; set; }
 
+    [MaxLength(20)]
+    public string? DocumentType { get; set; }
+
+    [MaxLength(20)]
+    public string? DocumentNumber { get; set; }
+
     [MaxLength(255)]
     public string? Address { get; set; }
 }

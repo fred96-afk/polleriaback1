@@ -11,4 +11,5 @@ public interface IBaseRepository<T> where T : class
     void Update(T entity);
     void Remove(T entity);
     Task<int> SaveChangesAsync();
+    Task<(IEnumerable<T> Items, int TotalCount)> GetPagedAsync(int pageNumber, int pageSize, Expression<Func<T, bool>>? filter = null);
 }

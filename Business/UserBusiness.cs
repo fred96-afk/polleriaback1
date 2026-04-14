@@ -10,7 +10,8 @@ namespace Business;
 public class UserBusiness(
     IUserRepository repository, 
     IMapper mapper, 
-    IPasswordHasher passwordHasher) : IUserBusiness
+    IPasswordHasher passwordHasher,
+    IEmailService emailService) : IUserBusiness
 {
     public async Task<IEnumerable<UserResponse>> GetAllAsync()
     {
@@ -31,10 +32,99 @@ public class UserBusiness(
         // Hashear la contraseña con salt+pepper antes de guardar
         entity.PasswordHash = passwordHasher.HashPassword(request.Password);
 
+        // Generar token de verificación
+        entity.VerificationToken = Guid.NewGuid().ToString();
+        entity.IsVerified = false;
+
         await repository.AddAsync(entity);
         await repository.SaveChangesAsync();
         
+        // Enviar correo de verificación de forma asíncrona (podrías usar un job de fondo si quieres que el registro sea más rápido)
+        try 
+        {
+            await emailService.SendVerificationEmailAsync(entity.Email, entity.Name, entity.VerificationToken);
+        }
+        catch (Exception ex)
+        {
+            // Loggear el error del correo, pero no detener el registro
+            Console.WriteLine($"Error enviando correo: {ex.Message}");
+        }
+        
         return mapper.Map<UserResponse>(entity);
+    }
+
+    public async Task<bool> VerifyEmailAsync(string token)
+    {
+        if (string.IsNullOrWhiteSpace(token)) return false;
+
+        var users = await repository.FindAsync(u => 
+            u.VerificationToken != null && 
+            u.VerificationToken.Trim() == token.Trim());
+            
+        var user = users.FirstOrDefault();
+
+        if (user == null) return false;
+
+        user.IsVerified = true;
+        user.VerificationToken = null; // Limpiar el token una vez usado
+
+        repository.Update(user);
+        return await repository.SaveChangesAsync() > 0;
+    }
+
+    public async Task RequestPasswordResetAsync(string email)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return;
+        }
+
+        var users = await repository.FindAsync(u => u.Email == email.Trim());
+        var user = users.FirstOrDefault();
+        if (user == null || !user.IsVerified)
+        {
+            return;
+        }
+
+        user.PasswordResetToken = Guid.NewGuid().ToString("N");
+        user.PasswordResetTokenExpiresAt = DateTime.UtcNow.AddHours(1);
+
+        repository.Update(user);
+        await repository.SaveChangesAsync();
+
+        try
+        {
+            await emailService.SendPasswordResetEmailAsync(user.Email, user.Name, user.PasswordResetToken);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error enviando correo de recuperación: {ex.Message}");
+        }
+    }
+
+    public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+    {
+        if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(newPassword))
+        {
+            return false;
+        }
+
+        var users = await repository.FindAsync(u =>
+            u.PasswordResetToken != null &&
+            u.PasswordResetToken == token.Trim());
+
+        var user = users.FirstOrDefault();
+        if (user == null || user.PasswordResetTokenExpiresAt == null || user.PasswordResetTokenExpiresAt < DateTime.UtcNow)
+        {
+            return false;
+        }
+
+        user.PasswordHash = passwordHasher.HashPassword(newPassword);
+        user.PasswordResetToken = null;
+        user.PasswordResetTokenExpiresAt = null;
+
+        repository.Update(user);
+        return await repository.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> UpdateAsync(int id, UserRequest request)

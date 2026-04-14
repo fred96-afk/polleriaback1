@@ -20,4 +20,9 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
 
     public int RoleId { get; set; }
+
+    public bool IsVerified { get; set; } = false;
+    public string? VerificationToken { get; set; }
+    public string? PasswordResetToken { get; set; }
+    public DateTime? PasswordResetTokenExpiresAt { get; set; }
 }

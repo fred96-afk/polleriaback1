@@ -21,15 +21,29 @@ public class OrdersController(IOrderBusiness business, INubeFactBusiness nubeFac
     [HttpPost]
     public async Task<IActionResult> Create(OrderRequest request)
     {
-        var result = await business.CreateAsync(request);
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        try
+        {
+            var result = await business.CreateAsync(request);
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpPost("{id}/invoice")]
     public async Task<IActionResult> GenerateInvoice(int id)
     {
-        var result = await nubeFactBusiness.GenerateInvoiceAsync(id);
-        return result.Success ? Ok(new { pdfUrl = result.PdfUrl }) : BadRequest(result.Error);
+        try
+        {
+            var result = await nubeFactBusiness.GenerateInvoiceAsync(id);
+            return result.Success ? Ok(new { pdfUrl = result.PdfUrl }) : BadRequest(result.Error);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]

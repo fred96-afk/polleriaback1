@@ -2,6 +2,7 @@ using DbModel.Tables;
 using IBusiness;
 using IRepository;
 using Models.Products;
+using Models.Common;
 
 namespace Business;
 
@@ -13,10 +14,26 @@ public class ProductBusiness(IProductRepository repository, ICloudinaryService c
         return entities.Select(e => new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl));
     }
 
+    public async Task<PagedResponse<ProductResponse>> GetPagedAsync(PaginationParams pagination, string? term = null)
+    {
+        var (items, totalCount) = await repository.GetPagedWithCategoryAsync(pagination.PageNumber, pagination.PageSize, term);
+
+        var dtos = items.Select(e => new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl));
+        var totalPages = (int)Math.Ceiling(totalCount / (double)pagination.PageSize);
+
+        return new PagedResponse<ProductResponse>(dtos, totalCount, totalPages, pagination.PageNumber, pagination.PageSize);
+    }
+
     public async Task<ProductResponse?> GetByIdAsync(int id)
     {
         var e = await repository.GetByIdAsync(id);
         return e == null ? null : new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl);
+    }
+
+    public async Task<IEnumerable<ProductResponse>> SearchAsync(string term)
+    {
+        var entities = await repository.SearchAsync(term);
+        return entities.Select(e => new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl));
     }
 
     public async Task<ProductResponse> CreateAsync(ProductRequest request)

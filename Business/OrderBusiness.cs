@@ -11,7 +11,8 @@ public class OrderBusiness(
     IProductRepository productRepository,
     ISideRepository sideRepository,
     IMercadoPagoBusiness mercadoPagoBusiness,
-    INubeFactBusiness nubeFactBusiness) : IOrderBusiness
+    INubeFactBusiness nubeFactBusiness,
+    IPusherService pusherService) : IOrderBusiness
 {
     public async Task<IEnumerable<OrderResponse>> GetAllAsync()
     {
@@ -91,19 +92,40 @@ public class OrderBusiness(
         var detailsWithIncludes = await detailRepository.GetByOrderIdWithIncludesAsync(order.Id);
         var orderResponse = MapToResponse(order, detailsWithIncludes);
 
+        // Notificar por Pusher si es un pedido de tipo delivery
+        if (request.DeliveryUserId.HasValue)
+        {
+            try
+            {
+                await pusherService.TriggerAsync("delivery-orders", "new-order", orderResponse);
+            }
+            catch (Exception ex)
+            {
+                // Log and continue, notification shouldn't break the order creation
+                Console.WriteLine($"Error al enviar notificación Pusher: {ex.Message}");
+            }
+        }
+
         // Si es una venta de Punto de Venta (POS), generamos comprobante nubefact
         if (request.IsPos)
         {
-            try 
+            try
             {
-                // Intentamos generar el comprobante pero con un timeout corto para no bloquear al usuario
                 var result = await nubeFactBusiness.GenerateInvoiceAsync(order.Id);
+                if (!result.Success)
+                {
+                    throw new InvalidOperationException(result.Error ?? "No se pudo generar el comprobante.");
+                }
+
                 return orderResponse with { PdfUrl = result.PdfUrl };
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error preventivo NubeFact: {ex.Message}");
-                // Retornamos el pedido aunque no se haya generado el PDF para evitar el error 500
                 return orderResponse;
             }
         }

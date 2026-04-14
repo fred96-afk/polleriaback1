@@ -106,7 +106,7 @@ namespace Polleria.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Category");
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("DbModel.Tables.Client", b =>
@@ -120,6 +120,14 @@ namespace Polleria.Migrations
                     b.Property<string>("Address")
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("DocumentNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("DocumentType")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -139,6 +147,8 @@ namespace Polleria.Migrations
                         {
                             Id = 1,
                             Address = "Av. Siempre Viva 123",
+                            DocumentNumber = "12345678",
+                            DocumentType = "DNI",
                             Name = "Juan Perez",
                             Phone = "987654321"
                         },
@@ -146,6 +156,8 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             Address = "Calle Real 456",
+                            DocumentNumber = "87654321",
+                            DocumentType = "DNI",
                             Name = "Maria Garcia",
                             Phone = "912345678"
                         },
@@ -153,6 +165,8 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             Address = "Urb. Los Rosales 789",
+                            DocumentNumber = "20123456789",
+                            DocumentType = "RUC",
                             Name = "Carlos Sanchez",
                             Phone = "954321098"
                         });
@@ -192,8 +206,6 @@ namespace Polleria.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("Invoices");
 
@@ -258,7 +270,7 @@ namespace Polleria.Migrations
                             Id = 1,
                             ClientId = 1,
                             DeliveryUserId = 3,
-                            OrderDate = new DateTime(2026, 4, 6, 14, 30, 47, 575, DateTimeKind.Utc).AddTicks(7823),
+                            OrderDate = new DateTime(2026, 4, 13, 23, 57, 15, 710, DateTimeKind.Utc).AddTicks(2787),
                             TotalAmount = 65.0m,
                             UserId = 2
                         },
@@ -266,7 +278,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             ClientId = 2,
-                            OrderDate = new DateTime(2026, 4, 6, 14, 30, 47, 575, DateTimeKind.Utc).AddTicks(7830),
+                            OrderDate = new DateTime(2026, 4, 13, 23, 57, 15, 710, DateTimeKind.Utc).AddTicks(2793),
                             TotalAmount = 35.0m,
                             UserId = 2
                         },
@@ -274,7 +286,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             ClientId = 3,
-                            OrderDate = new DateTime(2026, 4, 6, 14, 30, 47, 575, DateTimeKind.Utc).AddTicks(7834),
+                            OrderDate = new DateTime(2026, 4, 13, 23, 57, 15, 710, DateTimeKind.Utc).AddTicks(2796),
                             TotalAmount = 20.0m,
                             UserId = 1
                         });
@@ -379,8 +391,6 @@ namespace Polleria.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
 
                     b.ToTable("Payments");
 
@@ -499,12 +509,12 @@ namespace Polleria.Migrations
                         new
                         {
                             Id = 1,
-                            Name = "Administrador"
+                            Name = "Admin"
                         },
                         new
                         {
                             Id = 2,
-                            Name = "Mozo"
+                            Name = "Waiter"
                         },
                         new
                         {
@@ -514,7 +524,7 @@ namespace Polleria.Migrations
                         new
                         {
                             Id = 4,
-                            Name = "Cliente"
+                            Name = "Client"
                         });
                 });
 
@@ -582,6 +592,9 @@ namespace Polleria.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<bool>("IsVerified")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -592,8 +605,17 @@ namespace Polleria.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<string>("PasswordResetToken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PasswordResetTokenExpiresAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
+
+                    b.Property<string>("VerificationToken")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -604,6 +626,7 @@ namespace Polleria.Migrations
                         {
                             Id = 1,
                             Email = "admin@empresa.com",
+                            IsVerified = false,
                             Name = "Admin",
                             PasswordHash = "$2a$11$g9p.pmoBRECs8uL3nf0ns.ljh.I/VXgF9Mw/aT6LeVEGfz8oQ/QYG",
                             RoleId = 1
@@ -612,6 +635,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             Email = "mozo1@example.com",
+                            IsVerified = false,
                             Name = "Mozo 1",
                             PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
                             RoleId = 2
@@ -620,19 +644,11 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             Email = "delivery1@example.com",
+                            IsVerified = false,
                             Name = "Delivery 1",
                             PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
                             RoleId = 3
                         });
-                });
-
-            modelBuilder.Entity("DbModel.Tables.Invoice", b =>
-                {
-                    b.HasOne("DbModel.Tables.Order", null)
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("DbModel.Tables.OrderDetail", b =>
@@ -645,29 +661,18 @@ namespace Polleria.Migrations
 
                     b.HasOne("DbModel.Tables.Side", "Side")
                         .WithMany()
-                        .HasForeignKey("SideId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("SideId");
 
                     b.Navigation("Product");
 
                     b.Navigation("Side");
                 });
 
-            modelBuilder.Entity("DbModel.Tables.Payment", b =>
-                {
-                    b.HasOne("DbModel.Tables.Order", null)
-                        .WithMany()
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("DbModel.Tables.Product", b =>
                 {
                     b.HasOne("DbModel.Tables.Category", "Category")
                         .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("CategoryId");
 
                     b.Navigation("Category");
                 });
