@@ -8,6 +8,8 @@ public record OrderResponse(
     int? DeliveryUserId,
     decimal TotalAmount,
     List<OrderDetailResponse> Details,
+    string Status = "Pending",
+    string PaymentStatus = "Pending",
     string? PaymentUrl = null,
     string? PdfUrl = null
 );

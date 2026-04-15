@@ -4,5 +4,5 @@ namespace IBusiness;
 
 public interface IMercadoPagoBusiness
 {
-    Task<string> CreatePaymentPreferenceAsync(OrderResponse order);
+    Task<string> CreatePaymentPreferenceAsync(OrderResponse order, string payerEmail);
 }

@@ -3,6 +3,7 @@ using IBusiness;
 using IRepository;
 using Models.Products;
 using Models.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business;
 
@@ -11,14 +12,14 @@ public class ProductBusiness(IProductRepository repository, ICloudinaryService c
     public async Task<IEnumerable<ProductResponse>> GetAllAsync()
     {
         var entities = await repository.GetAllAsync();
-        return entities.Select(e => new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl));
+        return entities.Select(e => MapToResponse(e));
     }
 
     public async Task<PagedResponse<ProductResponse>> GetPagedAsync(PaginationParams pagination, string? term = null)
     {
         var (items, totalCount) = await repository.GetPagedWithCategoryAsync(pagination.PageNumber, pagination.PageSize, term);
 
-        var dtos = items.Select(e => new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl));
+        var dtos = items.Select(e => MapToResponse(e));
         var totalPages = (int)Math.Ceiling(totalCount / (double)pagination.PageSize);
 
         return new PagedResponse<ProductResponse>(dtos, totalCount, totalPages, pagination.PageNumber, pagination.PageSize);
@@ -27,13 +28,13 @@ public class ProductBusiness(IProductRepository repository, ICloudinaryService c
     public async Task<ProductResponse?> GetByIdAsync(int id)
     {
         var e = await repository.GetByIdAsync(id);
-        return e == null ? null : new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl);
+        return e == null ? null : MapToResponse(e);
     }
 
     public async Task<IEnumerable<ProductResponse>> SearchAsync(string term)
     {
         var entities = await repository.SearchAsync(term);
-        return entities.Select(e => new ProductResponse(e.Id, e.Name, e.Description, e.BasePrice, e.CategoryId, e.ImageUrl));
+        return entities.Select(e => MapToResponse(e));
     }
 
     public async Task<ProductResponse> CreateAsync(ProductRequest request)
@@ -49,12 +50,13 @@ public class ProductBusiness(IProductRepository repository, ICloudinaryService c
             Name = request.Name,
             Description = request.Description,
             BasePrice = request.BasePrice,
+            SalePrice = request.SalePrice,
             CategoryId = request.CategoryId,
             ImageUrl = imageUrl
         };
         await repository.AddAsync(entity);
         await repository.SaveChangesAsync();
-        return new ProductResponse(entity.Id, entity.Name, entity.Description, entity.BasePrice, entity.CategoryId, entity.ImageUrl);
+        return MapToResponse(entity);
     }
 
     public async Task<bool> UpdateAsync(int id, ProductRequest request)
@@ -70,6 +72,7 @@ public class ProductBusiness(IProductRepository repository, ICloudinaryService c
         entity.Name = request.Name;
         entity.Description = request.Description;
         entity.BasePrice = request.BasePrice;
+        entity.SalePrice = request.SalePrice;
         entity.CategoryId = request.CategoryId;
 
         repository.Update(entity);
@@ -83,5 +86,19 @@ public class ProductBusiness(IProductRepository repository, ICloudinaryService c
 
         repository.Remove(entity);
         return await repository.SaveChangesAsync() > 0;
+    }
+
+    private static ProductResponse MapToResponse(Product e)
+    {
+        return new ProductResponse(
+            e.Id, 
+            e.Name, 
+            e.Description, 
+            e.BasePrice, 
+            e.SalePrice, 
+            e.IsOnSale, 
+            e.CategoryId, 
+            e.ImageUrl
+        );
     }
 }

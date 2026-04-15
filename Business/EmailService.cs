@@ -59,4 +59,31 @@ public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
 
         await SendEmailAsync(to, subject, body);
     }
+
+    public async Task SendOrderInvoiceEmailAsync(string to, string name, string orderId, decimal total, string pdfUrl)
+    {
+        string subject = $"Comprobante de Pago - Pedido #{orderId}";
+        string body = $@"
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;'>
+                <h2 style='color: #d32f2f; text-align: center;'>¡Gracias por tu compra!</h2>
+                <p>Hola <strong>{name}</strong>,</p>
+                <p>Tu pedido ha sido procesado con éxito. Aquí tienes un resumen:</p>
+                <div style='background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;'>
+                    <p><strong>Pedido ID:</strong> #{orderId}</p>
+                    <p><strong>Total:</strong> S/ {total:F2}</p>
+                </div>
+                <p>Puedes descargar tu comprobante electrónico (Boleta) haciendo clic en el siguiente botón:</p>
+                <div style='text-align: center; margin: 30px 0;'>
+                    <a href='{pdfUrl}' style='background-color: #d32f2f; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;'>Descargar PDF</a>
+                </div>
+                <hr style='border: 0; border-top: 1px solid #eee;'>
+                <p style='font-size: 12px; color: #777; text-align: center;'>
+                    Si tienes alguna duda, por favor contáctanos.<br>
+                    <strong>Pollería Central</strong>
+                </p>
+            </div>
+        ";
+
+        await SendEmailAsync(to, subject, body);
+    }
 }

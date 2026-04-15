@@ -1,4 +1,5 @@
 using Models.Users;
+using IBusiness.Common;
 
 namespace IBusiness;
 
@@ -11,5 +12,5 @@ public interface IUserBusiness
     Task<bool> DeleteAsync(int id);
     Task<bool> VerifyEmailAsync(string token);
     Task RequestPasswordResetAsync(string email);
-    Task<bool> ResetPasswordAsync(string token, string newPassword);
+    Task<PasswordResetResult> ResetPasswordAsync(string token, string newPassword);
 }

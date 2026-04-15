@@ -20,6 +20,9 @@ public class Client
     [MaxLength(20)]
     public string? DocumentNumber { get; set; }
 
+    [MaxLength(100)]
+    public string? Email { get; set; }
+
     [MaxLength(255)]
     public string? Address { get; set; }
 }

@@ -137,24 +137,31 @@ public class NubeFactBusiness(
 
     private static (string TypeCode, string Number) ResolveClientDocument(Client? client)
     {
-        if (client == null)
+        if (client == null || 
+            string.IsNullOrWhiteSpace(client.DocumentType) || 
+            string.IsNullOrWhiteSpace(client.DocumentNumber))
         {
             return ("1", "00000000");
-        }
-
-        if (string.IsNullOrWhiteSpace(client.DocumentType) || string.IsNullOrWhiteSpace(client.DocumentNumber))
-        {
-            throw new InvalidOperationException("El cliente no tiene tipo y numero de documento registrados.");
         }
 
         var typeCode = client.DocumentType.Trim().ToUpperInvariant() switch
         {
             "DNI" => "1",
             "RUC" => "6",
-            _ => throw new InvalidOperationException("El tipo de documento del cliente no es valido para NubeFact.")
+            _ => "1" // Default to DNI if unknown
         };
 
-        return (typeCode, client.DocumentNumber.Trim().ToUpperInvariant());
+        var documentNumber = client.DocumentNumber.Trim().ToUpperInvariant();
+        
+        // If it was supposed to be DNI but doesn't look like one (8 digits), 
+        // or RUC but doesn't look like one (11 digits), we might still want to try,
+        // but for now let's just use what we have or generic if empty.
+        if (string.IsNullOrWhiteSpace(documentNumber))
+        {
+            return ("1", "00000000");
+        }
+
+        return (typeCode, documentNumber);
     }
 
     private class NubeFactResponse

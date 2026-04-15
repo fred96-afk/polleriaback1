@@ -26,7 +26,7 @@ public class MercadoPagoBusiness : IMercadoPagoBusiness
         MercadoPagoConfig.AccessToken = _settings.AccessToken;
     }
 
-    public async Task<string> CreatePaymentPreferenceAsync(OrderResponse order)
+    public async Task<string> CreatePaymentPreferenceAsync(OrderResponse order, string payerEmail)
     {
         if (order.Details.Count == 0)
         {
@@ -63,6 +63,10 @@ public class MercadoPagoBusiness : IMercadoPagoBusiness
             Items = items,
             ExternalReference = order.Id.ToString(),
             StatementDescriptor = BuildStatementDescriptor(_settings.StatementDescriptor),
+            Payer = new PreferencePayerRequest
+            {
+                Email = payerEmail
+            },
             BackUrls = new PreferenceBackUrlsRequest
             {
                 Success = successUrl,
@@ -115,11 +119,7 @@ public class MercadoPagoBusiness : IMercadoPagoBusiness
             return false;
         }
 
-        if (!string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase))
-        {
-            return false;
-        }
-
-        return !uri.IsLoopback;
+        // Mercado Pago solo permite auto_return en producción si la URL es HTTPS
+        return string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase) && !uri.IsLoopback;
     }
 }

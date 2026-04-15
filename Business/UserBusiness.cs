@@ -4,6 +4,7 @@ using IBusiness;
 using IBusiness.Security;
 using IRepository;
 using Models.Users;
+using IBusiness.Common;
 
 namespace Business;
 
@@ -102,11 +103,11 @@ public class UserBusiness(
         }
     }
 
-    public async Task<bool> ResetPasswordAsync(string token, string newPassword)
+    public async Task<PasswordResetResult> ResetPasswordAsync(string token, string newPassword)
     {
         if (string.IsNullOrWhiteSpace(token) || string.IsNullOrWhiteSpace(newPassword))
         {
-            return false;
+            return PasswordResetResult.InvalidToken;
         }
 
         var users = await repository.FindAsync(u =>
@@ -116,7 +117,13 @@ public class UserBusiness(
         var user = users.FirstOrDefault();
         if (user == null || user.PasswordResetTokenExpiresAt == null || user.PasswordResetTokenExpiresAt < DateTime.UtcNow)
         {
-            return false;
+            return PasswordResetResult.InvalidToken;
+        }
+
+        // Verificar si la nueva contraseña es igual a la actual
+        if (passwordHasher.VerifyPassword(newPassword, user.PasswordHash))
+        {
+            return PasswordResetResult.SamePassword;
         }
 
         user.PasswordHash = passwordHasher.HashPassword(newPassword);
@@ -124,7 +131,7 @@ public class UserBusiness(
         user.PasswordResetTokenExpiresAt = null;
 
         repository.Update(user);
-        return await repository.SaveChangesAsync() > 0;
+        return await repository.SaveChangesAsync() > 0 ? PasswordResetResult.Success : PasswordResetResult.Error;
     }
 
     public async Task<bool> UpdateAsync(int id, UserRequest request)

@@ -4,6 +4,7 @@ using IBusiness.Security;
 using Microsoft.AspNetCore.Mvc;
 using Models.Users;
 using DbModel.Tables; // Added for Role access
+using IBusiness.Common;
 
 namespace Polleria.Controllers;
 
@@ -138,13 +139,15 @@ public class AuthController(
             return BadRequest(new { message = "La nueva contraseña debe tener al menos 6 caracteres." });
         }
 
-        var success = await userBusiness.ResetPasswordAsync(request.Token, request.NewPassword);
-        if (!success)
+        var result = await userBusiness.ResetPasswordAsync(request.Token, request.NewPassword);
+        
+        return result switch
         {
-            return BadRequest(new { message = "El token de recuperación es inválido o expiró." });
-        }
-
-        return Ok(new { message = "La contraseña fue actualizada correctamente." });
+            PasswordResetResult.Success => Ok(new { message = "La contraseña fue actualizada correctamente." }),
+            PasswordResetResult.SamePassword => BadRequest(new { message = "No puedes repetir la misma contraseña." }),
+            PasswordResetResult.InvalidToken => BadRequest(new { message = "El token de recuperación es inválido o expiró." }),
+            _ => BadRequest(new { message = "Ocurrió un error al restablecer la contraseña." })
+        };
     }
 }
 
