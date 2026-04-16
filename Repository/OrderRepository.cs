@@ -9,9 +9,17 @@ public class OrderRepository(PolleriaDbContext context) : BaseRepository<Order>(
 {
     public async Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
-        return await _dbSet
-            .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
-            .OrderByDescending(o => o.OrderDate)
+        var normalizedStartDate = startDate.Date;
+        var normalizedEndDateExclusive = endDate.TimeOfDay == TimeSpan.Zero
+            ? endDate.Date.AddDays(1)
+            : endDate.AddTicks(1);
+
+        return await _context.Orders
+            .FromSqlInterpolated($@"
+                EXEC dbo.sp_GetOrdersByDateRange
+                    @StartDate = {normalizedStartDate},
+                    @EndDateExclusive = {normalizedEndDateExclusive}")
+            .AsNoTracking()
             .ToListAsync();
     }
 

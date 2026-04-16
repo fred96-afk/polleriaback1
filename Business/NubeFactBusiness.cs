@@ -17,6 +17,7 @@ public class NubeFactBusiness(
 {
     private readonly string _token = configuration["NubeFact:Token"] ?? throw new InvalidOperationException("NubeFact Token not found.");
     private readonly string _endpoint = configuration["NubeFact:Endpoint"] ?? throw new InvalidOperationException("NubeFact Endpoint not found.");
+    private static readonly TimeZoneInfo PeruTimeZone = ResolvePeruTimeZone();
 
     public async Task<NubeFactResult> GenerateInvoiceAsync(int orderId)
     {
@@ -39,6 +40,7 @@ public class NubeFactBusiness(
         var total = Math.Round(order.TotalAmount, 2);
         var totalGravada = Math.Round(total / 1.18m, 2);
         var totalIgv = total - totalGravada;
+        var peruNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, PeruTimeZone);
 
         var requestBody = new
         {
@@ -52,13 +54,13 @@ public class NubeFactBusiness(
             cliente_denominacion = clientName,
             cliente_direccion = client?.Address ?? "-",
             cliente_email = clientEmail,
-            fecha_de_emision = DateTime.UtcNow.ToString("dd-MM-yyyy"),
+            fecha_de_emision = peruNow.ToString("dd-MM-yyyy"),
             moneda = "1", // Soles
             porcentaje_de_igv = "18.00",
             total_gravada = totalGravada.ToString("F2"),
             total_igv = totalIgv.ToString("F2"),
             total = total.ToString("F2"),
-            codigo_unico = order.Id.ToString(),
+            codigo_unico = BuildUniqueCode(order.Id, peruNow),
             items = details.Select(d => {
                 var itemTotal = Math.Round(d.Subtotal, 2);
                 var itemUnitPrice = Math.Round(d.UnitPrice, 2);
@@ -162,6 +164,36 @@ public class NubeFactBusiness(
         }
 
         return (typeCode, documentNumber);
+    }
+
+    private static string BuildUniqueCode(int orderId, DateTime peruNow)
+    {
+        return $"PED-{orderId}-{peruNow:yyyyMMddHHmmssfff}";
+    }
+
+    private static TimeZoneInfo ResolvePeruTimeZone()
+    {
+        var candidates = new[]
+        {
+            "SA Pacific Standard Time", // Windows
+            "America/Lima" // Linux/macOS
+        };
+
+        foreach (var candidate in candidates)
+        {
+            try
+            {
+                return TimeZoneInfo.FindSystemTimeZoneById(candidate);
+            }
+            catch (TimeZoneNotFoundException)
+            {
+            }
+            catch (InvalidTimeZoneException)
+            {
+            }
+        }
+
+        return TimeZoneInfo.Utc;
     }
 
     private class NubeFactResponse

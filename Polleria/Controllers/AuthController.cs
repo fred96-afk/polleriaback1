@@ -59,11 +59,6 @@ public class AuthController(
             return Unauthorized("Email o contraseña incorrectos.");
         }
 
-        if (!user.IsVerified)
-        {
-            return BadRequest("Debes verificar tu correo electrónico antes de iniciar sesión.");
-        }
-
         var role = await roleRepository.GetByIdAsync(user.RoleId);
         var roleName = role?.Name ?? "User";
 
@@ -71,6 +66,11 @@ public class AuthController(
         if (roleName.Equals("Client", StringComparison.OrdinalIgnoreCase))
         {
             return Unauthorized("Acceso no autorizado: los clientes deben usar el endpoint de login normal.");
+        }
+
+        if (!user.IsVerified && !IsInternalRole(roleName))
+        {
+            return BadRequest("Debes verificar tu correo electrónico antes de iniciar sesión.");
         }
 
         var token = jwtService.GenerateToken(user, roleName);
@@ -148,6 +148,14 @@ public class AuthController(
             PasswordResetResult.InvalidToken => BadRequest(new { message = "El token de recuperación es inválido o expiró." }),
             _ => BadRequest(new { message = "Ocurrió un error al restablecer la contraseña." })
         };
+    }
+
+    private static bool IsInternalRole(string roleName)
+    {
+        return roleName.Equals("Admin", StringComparison.OrdinalIgnoreCase)
+            || roleName.Equals("Waiter", StringComparison.OrdinalIgnoreCase)
+            || roleName.Equals("Mozo", StringComparison.OrdinalIgnoreCase)
+            || roleName.Equals("Delivery", StringComparison.OrdinalIgnoreCase);
     }
 }
 

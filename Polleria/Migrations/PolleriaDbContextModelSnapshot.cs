@@ -129,6 +129,10 @@ namespace Polleria.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -268,6 +272,12 @@ namespace Polleria.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientId");
+
+                    b.HasIndex("DeliveryUserId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Orders");
 
                     b.HasData(
@@ -276,7 +286,7 @@ namespace Polleria.Migrations
                             Id = 1,
                             ClientId = 1,
                             DeliveryUserId = 3,
-                            OrderDate = new DateTime(2026, 4, 14, 19, 58, 51, 39, DateTimeKind.Utc).AddTicks(5437),
+                            OrderDate = new DateTime(2026, 4, 16, 1, 56, 46, 6, DateTimeKind.Utc).AddTicks(563),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 65.0m,
@@ -286,7 +296,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             ClientId = 2,
-                            OrderDate = new DateTime(2026, 4, 14, 19, 58, 51, 39, DateTimeKind.Utc).AddTicks(5450),
+                            OrderDate = new DateTime(2026, 4, 16, 1, 56, 46, 6, DateTimeKind.Utc).AddTicks(568),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 35.0m,
@@ -296,7 +306,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             ClientId = 3,
-                            OrderDate = new DateTime(2026, 4, 14, 19, 58, 51, 39, DateTimeKind.Utc).AddTicks(5458),
+                            OrderDate = new DateTime(2026, 4, 16, 1, 56, 46, 6, DateTimeKind.Utc).AddTicks(569),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 20.0m,
@@ -333,6 +343,8 @@ namespace Polleria.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
 
                     b.HasIndex("ProductId");
 
@@ -663,8 +675,37 @@ namespace Polleria.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DbModel.Tables.Order", b =>
+                {
+                    b.HasOne("DbModel.Tables.Client", "Client")
+                        .WithMany()
+                        .HasForeignKey("ClientId");
+
+                    b.HasOne("DbModel.Tables.User", "DeliveryUser")
+                        .WithMany()
+                        .HasForeignKey("DeliveryUserId");
+
+                    b.HasOne("DbModel.Tables.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("DeliveryUser");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DbModel.Tables.OrderDetail", b =>
                 {
+                    b.HasOne("DbModel.Tables.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("DbModel.Tables.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
@@ -674,6 +715,8 @@ namespace Polleria.Migrations
                     b.HasOne("DbModel.Tables.Side", "Side")
                         .WithMany()
                         .HasForeignKey("SideId");
+
+                    b.Navigation("Order");
 
                     b.Navigation("Product");
 
@@ -692,6 +735,11 @@ namespace Polleria.Migrations
             modelBuilder.Entity("DbModel.Tables.Category", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("DbModel.Tables.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

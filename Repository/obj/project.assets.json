@@ -676,35 +676,43 @@
     ]
   },
   "packageFolders": {
-    "/home/edgardo/.nuget/packages/": {}
+    "C:\\Users\\Fredy\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/edgardo/Documentos/polleria/polleria/polleriaback/Repository/Repository.csproj",
+      "projectUniqueName": "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\Repository\\Repository.csproj",
       "projectName": "Repository",
-      "projectPath": "/home/edgardo/Documentos/polleria/polleria/polleriaback/Repository/Repository.csproj",
-      "packagesPath": "/home/edgardo/.nuget/packages/",
-      "outputPath": "/home/edgardo/Documentos/polleria/polleria/polleriaback/Repository/obj/",
+      "projectPath": "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\Repository\\Repository.csproj",
+      "packagesPath": "C:\\Users\\Fredy\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\Repository\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/home/edgardo/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\Fredy\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "/home/edgardo/Documentos/polleria/polleria/polleriaback/DbModel/DbModel.csproj": {
-              "projectPath": "/home/edgardo/Documentos/polleria/polleria/polleriaback/DbModel/DbModel.csproj"
+            "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\DbModel\\DbModel.csproj": {
+              "projectPath": "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\DbModel\\DbModel.csproj"
             },
-            "/home/edgardo/Documentos/polleria/polleria/polleriaback/IRepository/IRepository.csproj": {
-              "projectPath": "/home/edgardo/Documentos/polleria/polleria/polleriaback/IRepository/IRepository.csproj"
+            "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\IRepository\\IRepository.csproj": {
+              "projectPath": "C:\\Users\\Fredy\\Documents\\polleria 2\\polleriaback\\IRepository\\IRepository.csproj"
             }
           }
         }
@@ -713,7 +721,13 @@
         "warnAsError": [
           "NU1605"
         ]
-      }
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net8.0": {
@@ -729,18 +743,12 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[8.0.25, 8.0.25]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.125/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.200-preview.0.26103.119/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
