@@ -1,23 +1,3 @@
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.deps.json
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.dll
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.pdb
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/DbModel.dll
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/IRepository.dll
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/Models.dll
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/Models.pdb
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/IRepository.pdb
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/bin/Debug/net8.0/DbModel.pdb
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.AssemblyReference.cache
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.GeneratedMSBuildEditorConfig.editorconfig
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.AssemblyInfoInputs.cache
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.AssemblyInfo.cs
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.CoreCompileInputs.cache
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.sourcelink.json
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.Up2Date
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.dll
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/refint/IBusiness.dll
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.pdb
-/home/edgardo/Documentos/Polleria/polleriaback/IBusiness/obj/Debug/net8.0/ref/IBusiness.dll
 C:/Users/Fredy/Documents/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.deps.json
 C:/Users/Fredy/Documents/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.dll
 C:/Users/Fredy/Documents/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.pdb
@@ -58,26 +38,46 @@ C:/Users/Fredy/Documents/polleria/polleriaback/IBusiness/obj/Debug/net8.0/ref/IB
 /home/edgardo/Documentos/polleria/polleria/polleriaback/IBusiness/obj/Debug/net8.0/refint/IBusiness.dll
 /home/edgardo/Documentos/polleria/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.pdb
 /home/edgardo/Documentos/polleria/polleria/polleriaback/IBusiness/obj/Debug/net8.0/ref/IBusiness.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\IBusiness.deps.json
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\IBusiness.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\IBusiness.pdb
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\DbModel.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\IRepository.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\Models.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\Models.pdb
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\IRepository.pdb
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\bin\Debug\net8.0\DbModel.pdb
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.csproj.AssemblyReference.cache
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.AssemblyInfoInputs.cache
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.AssemblyInfo.cs
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.csproj.CoreCompileInputs.cache
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.sourcelink.json
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.csproj.Up2Date
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\refint\IBusiness.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\IBusiness.pdb
-C:\Users\Fredy\Documents\polleria 2\polleriaback\IBusiness\obj\Debug\net8.0\ref\IBusiness.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\build-temp\Debug\net8.0\IBusiness.deps.json
-C:\Users\Fredy\Documents\polleria 2\polleriaback\build-temp\Debug\net8.0\IBusiness.dll
-C:\Users\Fredy\Documents\polleria 2\polleriaback\build-temp\Debug\net8.0\IBusiness.pdb
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.deps.json
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.pdb
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/DbModel.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/IRepository.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/Models.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/Models.pdb
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/IRepository.pdb
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/bin/Debug/net8.0/DbModel.pdb
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.AssemblyReference.cache
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.GeneratedMSBuildEditorConfig.editorconfig
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.AssemblyInfoInputs.cache
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.AssemblyInfo.cs
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.CoreCompileInputs.cache
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.sourcelink.json
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.Up2Date
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/refint/IBusiness.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.pdb
+C:/Users/Fredy/Documents/polleria 2/polleriaback/IBusiness/obj/Debug/net8.0/ref/IBusiness.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/build-temp/Debug/net8.0/IBusiness.deps.json
+C:/Users/Fredy/Documents/polleria 2/polleriaback/build-temp/Debug/net8.0/IBusiness.dll
+C:/Users/Fredy/Documents/polleria 2/polleriaback/build-temp/Debug/net8.0/IBusiness.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.deps.json
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.dll
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IBusiness.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/DbModel.dll
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IRepository.dll
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/Models.dll
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/Models.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/IRepository.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/bin/Debug/net8.0/DbModel.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.AssemblyReference.cache
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.GeneratedMSBuildEditorConfig.editorconfig
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.AssemblyInfoInputs.cache
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.AssemblyInfo.cs
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.CoreCompileInputs.cache
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.sourcelink.json
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.csproj.Up2Date
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.dll
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/refint/IBusiness.dll
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/IBusiness.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/Debug/net8.0/ref/IBusiness.dll

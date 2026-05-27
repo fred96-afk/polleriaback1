@@ -23,6 +23,15 @@ public class OrderBusiness(
         return orders.Select(o => MapToResponse(o, o.OrderDetails));
     }
 
+    public async Task<IEnumerable<OrderResponse>> GetDeliveryOrdersAsync()
+    {
+        var orders = await orderRepository.GetAllWithIncludesAsync();
+        // Filtrar solo pedidos de tipo Delivery
+        return orders
+            .Where(o => o.Type == OrderType.Delivery)
+            .Select(o => MapToResponse(o, o.OrderDetails));
+    }
+
     public async Task<OrderResponse?> GetByIdAsync(int id)
     {
         var order = await orderRepository.GetByIdWithIncludesAsync(id);
@@ -31,70 +40,80 @@ public class OrderBusiness(
         return MapToResponse(order, order.OrderDetails);
     }
 
+    public async Task<OrderResponse?> GetTrackingAsync(int id)
+    {
+        // El rastreo usa la misma lógica que GetById pero puede ser usado públicamente
+        var order = await orderRepository.GetByIdWithIncludesAsync(id);
+        if (order == null) return null;
+
+        return MapToResponse(order, order.OrderDetails);
+    }
+
     public async Task<OrderResponse> CreateAsync(OrderRequest request)
     {
-        int? clientId = request.ClientId;
-        string? customerEmail = request.CustomerEmail;
-
-        // Lógica para POS: Nombre y DNI obligatorios
-        if (request.IsPos)
+        Client? client = null;
+        
+        // 1. Buscar o Crear Cliente
+        if (!string.IsNullOrWhiteSpace(request.DocumentNumber))
         {
-            if (string.IsNullOrWhiteSpace(request.DocumentNumber) || string.IsNullOrWhiteSpace(request.CustomerName))
-            {
-                throw new InvalidOperationException("El nombre del cliente y el número de documento son obligatorios para ventas POS.");
-            }
-
-            // Buscar si el cliente ya existe por documento
             var existingClients = await clientRepository.FindAsync(c => c.DocumentNumber == request.DocumentNumber);
-            var client = existingClients.FirstOrDefault();
-
-            if (client == null)
-            {
-                // Crear cliente nuevo si no existe
-                client = new Client
-                {
-                    Name = request.CustomerName,
-                    DocumentNumber = request.DocumentNumber,
-                    DocumentType = request.DocumentType ?? "DNI",
-                    Email = request.CustomerEmail,
-                    Address = "-"
-                };
-                await clientRepository.AddAsync(client);
-                await clientRepository.SaveChangesAsync();
-            }
-            else
-            {
-                // Actualizar email si se proporciona uno nuevo
-                if (!string.IsNullOrWhiteSpace(request.CustomerEmail) && client.Email != request.CustomerEmail)
-                {
-                    client.Email = request.CustomerEmail;
-                    clientRepository.Update(client);
-                    await clientRepository.SaveChangesAsync();
-                }
-                
-                if (string.IsNullOrWhiteSpace(customerEmail))
-                {
-                    customerEmail = client.Email;
-                }
-            }
-            
-            clientId = client.Id;
+            client = existingClients.FirstOrDefault();
         }
 
+        if (client == null && !string.IsNullOrWhiteSpace(request.CustomerName))
+        {
+            client = new Client
+            {
+                Name = request.CustomerName,
+                DocumentNumber = request.DocumentNumber,
+                DocumentType = request.DocumentType ?? "DNI",
+                Email = request.CustomerEmail,
+                Address = request.CustomerAddress ?? "-",
+                Phone = request.CustomerPhone
+            };
+            await clientRepository.AddAsync(client);
+            await clientRepository.SaveChangesAsync();
+        }
+        else if (client != null)
+        {
+            // Actualizar datos si han cambiado
+            bool updated = false;
+            if (!string.IsNullOrWhiteSpace(request.CustomerName) && client.Name != request.CustomerName) { client.Name = request.CustomerName; updated = true; }
+            if (!string.IsNullOrWhiteSpace(request.CustomerEmail) && client.Email != request.CustomerEmail) { client.Email = request.CustomerEmail; updated = true; }
+            if (!string.IsNullOrWhiteSpace(request.CustomerAddress) && client.Address != request.CustomerAddress) { client.Address = request.CustomerAddress; updated = true; }
+            if (!string.IsNullOrWhiteSpace(request.CustomerPhone) && client.Phone != request.CustomerPhone) { client.Phone = request.CustomerPhone; updated = true; }
+            
+            if (updated)
+            {
+                clientRepository.Update(client);
+                await clientRepository.SaveChangesAsync();
+            }
+        }
+
+        // Determinar el tipo de orden
+        var orderType = OrderType.Delivery;
+        if (request.IsPos) orderType = OrderType.POS;
+        else if (request.IsPickup) orderType = OrderType.Pickup;
+
+        // 2. Crear la Orden
         var order = new Order
         {
-            ClientId = clientId,
+            ClientId = client?.Id,
+            Client = client, // Seteamos la propiedad de navegación para asegurar que se incluya en la respuesta
             UserId = request.UserId,
             DeliveryUserId = request.DeliveryUserId,
             OrderDate = DateTime.UtcNow,
-            TotalAmount = 0
+            TotalAmount = 0,
+            Type = orderType,
+            Status = OrderStatus.Pending,
+            PaymentStatus = PaymentStatus.Pending
         };
 
         await orderRepository.AddAsync(order);
         await orderRepository.SaveChangesAsync();
 
+        // 3. Procesar Detalles
         decimal totalAmount = 0;
-
         foreach (var item in request.Details)
         {
             var product = await productRepository.GetByIdAsync(item.ProductId);
@@ -104,10 +123,7 @@ public class OrderBusiness(
             if (item.SideId.HasValue)
             {
                 var side = await sideRepository.GetByIdAsync(item.SideId.Value);
-                if (side != null)
-                {
-                    unitPrice += side.Price;
-                }
+                if (side != null) unitPrice += side.Price;
             }
 
             var subtotal = unitPrice * item.Quantity;
@@ -130,70 +146,43 @@ public class OrderBusiness(
         orderRepository.Update(order);
         await orderRepository.SaveChangesAsync();
 
-        // Obtener detalles con inclusiones para la respuesta y para MP
-        var detailsWithIncludes = await detailRepository.GetByOrderIdWithIncludesAsync(order.Id);
-        var orderResponse = MapToResponse(order, detailsWithIncludes);
+        // 4. Obtener orden completa para respuesta
+        var orderWithIncludes = await orderRepository.GetByIdWithIncludesAsync(order.Id);
+        if (orderWithIncludes == null) throw new InvalidOperationException("Error al recuperar la orden creada.");
 
-        // Notificar por Pusher si es un pedido de tipo delivery
+        var orderResponse = MapToResponse(orderWithIncludes, orderWithIncludes.OrderDetails);
+
+        // 5. Notificaciones (Pusher)
         if (request.DeliveryUserId.HasValue || order.Status == OrderStatus.Pending)
         {
-            try
-            {
-                await pusherService.TriggerAsync("orders", "new-order", orderResponse);
-            }
-            catch (Exception ex)
-            {
-                // Log and continue, notification shouldn't break the order creation
-                Console.WriteLine($"Error al enviar notificación Pusher: {ex.Message}");
-            }
+            try { await pusherService.TriggerAsync("orders", "new-order", orderResponse); }
+            catch (Exception ex) { Console.WriteLine($"Error Pusher: {ex.Message}"); }
         }
 
-        // Si es una venta de Punto de Venta (POS), generamos comprobante nubefact
+        // 6. Facturación (NubeFact) si es POS
         if (request.IsPos)
         {
             try
             {
                 var result = await nubeFactBusiness.GenerateInvoiceAsync(order.Id);
-                if (!result.Success)
-                {
-                    throw new InvalidOperationException(result.Error ?? "No se pudo generar el comprobante.");
-                }
+                if (!result.Success) throw new InvalidOperationException(result.Error ?? "Error NubeFact.");
 
-                // Enviar correo si tenemos email del cliente
-                if (!string.IsNullOrWhiteSpace(customerEmail))
+                if (!string.IsNullOrWhiteSpace(orderResponse.CustomerEmail))
                 {
-                    try
-                    {
-                        await emailService.SendOrderInvoiceEmailAsync(
-                            customerEmail,
-                            request.CustomerName ?? "Cliente",
-                            order.Id.ToString(),
-                            order.TotalAmount,
-                            result.PdfUrl!
-                        );
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error al enviar correo de comprobante: {ex.Message}");
-                    }
+                    try { await emailService.SendOrderInvoiceEmailAsync(orderResponse.CustomerEmail, orderResponse.CustomerName ?? "Cliente", order.Id.ToString(), order.TotalAmount, result.PdfUrl!); }
+                    catch (Exception ex) { Console.WriteLine($"Error Email: {ex.Message}"); }
                 }
 
                 return orderResponse with { PdfUrl = result.PdfUrl };
             }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error preventivo NubeFact: {ex.Message}");
-                return orderResponse;
-            }
+            catch (Exception ex) { Console.WriteLine($"Error NubeFact: {ex.Message}"); return orderResponse; }
         }
 
-        // Generar enlace de pago para ventas online
-        var user = await userRepository.GetByIdAsync(order.UserId);
-        var payerEmail = user?.Email ?? "test_user_polleria@test.com"; // Email por defecto si no hay usuario
+        // 7. Mercado Pago para Ventas Online
+        // Usamos el email del cliente que ya viene en la respuesta procesada
+        var payerEmail = !string.IsNullOrWhiteSpace(orderResponse.CustomerEmail) 
+            ? orderResponse.CustomerEmail 
+            : "cliente_polleria@test.com"; 
 
         var paymentUrl = await mercadoPagoBusiness.CreatePaymentPreferenceAsync(orderResponse, payerEmail);
 
@@ -211,8 +200,14 @@ public class OrderBusiness(
 
     public async Task<bool> UpdateStatusAsync(int id, string status)
     {
-        var order = await orderRepository.GetByIdAsync(id);
+        var order = await orderRepository.GetByIdWithIncludesAsync(id);
         if (order == null) return false;
+
+        // Normalización para compatibilidad con el front (OnWay -> OnTheWay)
+        if (status.Equals("OnWay", StringComparison.OrdinalIgnoreCase))
+        {
+            status = "OnTheWay";
+        }
 
         if (Enum.TryParse<OrderStatus>(status, true, out var orderStatus))
         {
@@ -222,8 +217,7 @@ public class OrderBusiness(
 
             if (result)
             {
-                var details = await detailRepository.GetByOrderIdWithIncludesAsync(order.Id);
-                var response = MapToResponse(order, details);
+                var response = MapToResponse(order, order.OrderDetails);
                 await pusherService.TriggerAsync("orders", "status-updated", response);
             }
 
@@ -235,7 +229,7 @@ public class OrderBusiness(
 
     public async Task<bool> UpdatePaymentStatusAsync(int id, string status)
     {
-        var order = await orderRepository.GetByIdAsync(id);
+        var order = await orderRepository.GetByIdWithIncludesAsync(id);
         if (order == null) return false;
 
         if (Enum.TryParse<PaymentStatus>(status, true, out var paymentStatus))
@@ -246,8 +240,7 @@ public class OrderBusiness(
 
             if (result)
             {
-                var details = await detailRepository.GetByOrderIdWithIncludesAsync(order.Id);
-                var response = MapToResponse(order, details);
+                var response = MapToResponse(order, order.OrderDetails);
                 await pusherService.TriggerAsync("orders", "payment-updated", response);
             }
 
@@ -259,7 +252,7 @@ public class OrderBusiness(
 
     public async Task<bool> AcceptDeliveryOrderAsync(int id, int deliveryUserId)
     {
-        var order = await orderRepository.GetByIdAsync(id);
+        var order = await orderRepository.GetByIdWithIncludesAsync(id);
         if (order == null) return false;
 
         order.DeliveryUserId = deliveryUserId;
@@ -269,8 +262,7 @@ public class OrderBusiness(
 
         if (result)
         {
-            var details = await detailRepository.GetByOrderIdWithIncludesAsync(order.Id);
-            var response = MapToResponse(order, details);
+            var response = MapToResponse(order, order.OrderDetails);
             await pusherService.TriggerAsync("orders", "order-accepted", response);
         }
 
@@ -283,9 +275,16 @@ public class OrderBusiness(
             order.Id,
             order.OrderDate,
             order.ClientId,
+            order.Client?.Name,
+            order.Client?.Address,
+            order.Client?.Phone,
+            order.Client?.Email,
             order.UserId,
+            order.User?.Name,
             order.DeliveryUserId,
+            order.DeliveryUser?.Name,
             order.TotalAmount,
+            order.Type.ToString(),
             details.Select(d => new OrderDetailResponse(
                 d.Id,
                 d.ProductId,

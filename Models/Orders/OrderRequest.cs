@@ -9,7 +9,10 @@ public record OrderRequest(
     string? CustomerName = null,
     string? DocumentNumber = null,
     string? DocumentType = "DNI",
-    string? CustomerEmail = null
+    string? CustomerEmail = null,
+    string? CustomerAddress = null,
+    string? CustomerPhone = null,
+    bool IsPickup = false
 );
 
 public record OrderDetailRequest(
@@ -17,3 +20,7 @@ public record OrderDetailRequest(
     int? SideId,
     int Quantity
 );
+
+public record StatusUpdateRequest(string Status, string? Valor = null);
+
+public record AcceptDeliveryRequest(int DeliveryUserId);

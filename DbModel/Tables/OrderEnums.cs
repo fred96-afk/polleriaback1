@@ -18,3 +18,10 @@ public enum PaymentStatus
     Rejected,
     Cancelled
 }
+
+public enum OrderType
+{
+    Delivery,
+    Pickup,
+    POS
+}

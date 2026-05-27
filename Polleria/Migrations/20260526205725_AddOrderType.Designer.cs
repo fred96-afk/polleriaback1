@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Polleria.Migrations
 {
     [DbContext(typeof(PolleriaDbContext))]
-    [Migration("20260416014702_procedimientosAlmacenados")]
-    partial class procedimientosAlmacenados
+    [Migration("20260526205725_AddOrderType")]
+    partial class AddOrderType
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -270,6 +270,9 @@ namespace Polleria.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
@@ -289,30 +292,33 @@ namespace Polleria.Migrations
                             Id = 1,
                             ClientId = 1,
                             DeliveryUserId = 3,
-                            OrderDate = new DateTime(2026, 4, 16, 1, 47, 2, 68, DateTimeKind.Utc).AddTicks(1217),
+                            OrderDate = new DateTime(2026, 5, 26, 20, 57, 20, 481, DateTimeKind.Utc).AddTicks(9948),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 65.0m,
+                            Type = 0,
                             UserId = 2
                         },
                         new
                         {
                             Id = 2,
                             ClientId = 2,
-                            OrderDate = new DateTime(2026, 4, 16, 1, 47, 2, 68, DateTimeKind.Utc).AddTicks(1252),
+                            OrderDate = new DateTime(2026, 5, 26, 20, 57, 20, 481, DateTimeKind.Utc).AddTicks(9961),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 35.0m,
+                            Type = 0,
                             UserId = 2
                         },
                         new
                         {
                             Id = 3,
                             ClientId = 3,
-                            OrderDate = new DateTime(2026, 4, 16, 1, 47, 2, 68, DateTimeKind.Utc).AddTicks(1254),
+                            OrderDate = new DateTime(2026, 5, 26, 20, 57, 20, 481, DateTimeKind.Utc).AddTicks(9969),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 20.0m,
+                            Type = 0,
                             UserId = 1
                         });
                 });
@@ -653,7 +659,7 @@ namespace Polleria.Migrations
                         {
                             Id = 1,
                             Email = "admin@empresa.com",
-                            IsVerified = false,
+                            IsVerified = true,
                             Name = "Admin",
                             PasswordHash = "$2a$11$g9p.pmoBRECs8uL3nf0ns.ljh.I/VXgF9Mw/aT6LeVEGfz8oQ/QYG",
                             RoleId = 1
@@ -662,7 +668,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             Email = "mozo1@example.com",
-                            IsVerified = false,
+                            IsVerified = true,
                             Name = "Mozo 1",
                             PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
                             RoleId = 2
@@ -671,7 +677,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             Email = "delivery1@example.com",
-                            IsVerified = false,
+                            IsVerified = true,
                             Name = "Delivery 1",
                             PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
                             RoleId = 3

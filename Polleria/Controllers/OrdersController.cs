@@ -11,6 +11,16 @@ public class OrdersController(IOrderBusiness business, INubeFactBusiness nubeFac
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await business.GetAllAsync());
 
+    [HttpGet("delivery")]
+    public async Task<IActionResult> GetDeliveryOrders() => Ok(await business.GetDeliveryOrdersAsync());
+
+    [HttpGet("rastreo/{id}")]
+    public async Task<IActionResult> GetTracking(int id)
+    {
+        var result = await business.GetTrackingAsync(id);
+        return result == null ? NotFound() : Ok(result);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -54,23 +64,29 @@ public class OrdersController(IOrderBusiness business, INubeFactBusiness nubeFac
     }
 
     [HttpPatch("{id}/status")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] string status)
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] StatusUpdateRequest request)
     {
+        var status = request.Status ?? request.Valor;
+        if (string.IsNullOrEmpty(status)) return BadRequest("Status is required.");
+        
         var success = await business.UpdateStatusAsync(id, status);
         return success ? Ok() : BadRequest("Invalid status or order not found.");
     }
 
     [HttpPatch("{id}/payment-status")]
-    public async Task<IActionResult> UpdatePaymentStatus(int id, [FromBody] string status)
+    public async Task<IActionResult> UpdatePaymentStatus(int id, [FromBody] StatusUpdateRequest request)
     {
+        var status = request.Status ?? request.Valor;
+        if (string.IsNullOrEmpty(status)) return BadRequest("Payment status is required.");
+
         var success = await business.UpdatePaymentStatusAsync(id, status);
         return success ? Ok() : BadRequest("Invalid payment status or order not found.");
     }
 
     [HttpPost("{id}/accept-delivery")]
-    public async Task<IActionResult> AcceptDelivery(int id, [FromBody] int deliveryUserId)
+    public async Task<IActionResult> AcceptDelivery(int id, [FromBody] AcceptDeliveryRequest request)
     {
-        var success = await business.AcceptDeliveryOrderAsync(id, deliveryUserId);
+        var success = await business.AcceptDeliveryOrderAsync(id, request.DeliveryUserId);
         return success ? Ok() : BadRequest("Order not found or could not be accepted.");
     }
 }

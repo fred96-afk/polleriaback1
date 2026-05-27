@@ -14,11 +14,10 @@ public class OrderRepository(PolleriaDbContext context) : BaseRepository<Order>(
             ? endDate.Date.AddDays(1)
             : endDate.AddTicks(1);
 
-        return await _context.Orders
-            .FromSqlInterpolated($@"
-                EXEC dbo.sp_GetOrdersByDateRange
-                    @StartDate = {normalizedStartDate},
-                    @EndDateExclusive = {normalizedEndDateExclusive}")
+        return await _dbSet
+            .Include(o => o.Client)
+            .Include(o => o.OrderDetails)
+            .Where(o => o.OrderDate >= normalizedStartDate && o.OrderDate < normalizedEndDateExclusive)
             .AsNoTracking()
             .ToListAsync();
     }
@@ -26,17 +25,24 @@ public class OrderRepository(PolleriaDbContext context) : BaseRepository<Order>(
     public async Task<IEnumerable<Order>> GetAllWithIncludesAsync()
     {
         return await _dbSet
+            .Include(o => o.Client)
+            .Include(o => o.User)
+            .Include(o => o.DeliveryUser)
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.Product)
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.Side)
             .OrderByDescending(o => o.OrderDate)
+            .AsNoTracking()
             .ToListAsync();
     }
 
     public async Task<Order?> GetByIdWithIncludesAsync(int id)
     {
         return await _dbSet
+            .Include(o => o.Client)
+            .Include(o => o.User)
+            .Include(o => o.DeliveryUser)
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.Product)
             .Include(o => o.OrderDetails)

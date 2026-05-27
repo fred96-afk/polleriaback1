@@ -73,7 +73,7 @@ public class MercadoPagoBusiness : IMercadoPagoBusiness
                 Failure = $"{frontendBaseUrl}/checkout/failure",
                 Pending = $"{frontendBaseUrl}/checkout/pending"
             },
-            AutoReturn = CanUseAutoReturn(successUrl) ? "approved" : null,
+            AutoReturn = CanUseAutoReturn(successUrl, _settings.AccessToken) ? "approved" : null,
             BinaryMode = true,
             PaymentMethods = new PreferencePaymentMethodsRequest
             {
@@ -112,14 +112,20 @@ public class MercadoPagoBusiness : IMercadoPagoBusiness
         return value.Length <= 13 ? value : value[..13];
     }
 
-    private static bool CanUseAutoReturn(string successUrl)
+    private static bool CanUseAutoReturn(string successUrl, string accessToken)
     {
         if (!Uri.TryCreate(successUrl, UriKind.Absolute, out var uri))
         {
             return false;
         }
 
-        // Mercado Pago solo permite auto_return en producción si la URL es HTTPS
-        return string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase) && !uri.IsLoopback;
+        // Si es un token de producción, Mercado Pago OBLIGA a que sea HTTPS para auto_return
+        if (accessToken.StartsWith("APP_USR", StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Equals(uri.Scheme, Uri.UriSchemeHttps, StringComparison.OrdinalIgnoreCase);
+        }
+
+        // En Sandbox (TEST-) suele permitir redirección a localhost/http
+        return true;
     }
 }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Polleria.Migrations
 {
     [DbContext(typeof(PolleriaDbContext))]
-    [Migration("20260416015646_CrearStoredProcedureReportes")]
-    partial class CrearStoredProcedureReportes
+    [Migration("20260525210745_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -289,7 +289,7 @@ namespace Polleria.Migrations
                             Id = 1,
                             ClientId = 1,
                             DeliveryUserId = 3,
-                            OrderDate = new DateTime(2026, 4, 16, 1, 56, 46, 6, DateTimeKind.Utc).AddTicks(563),
+                            OrderDate = new DateTime(2026, 5, 25, 21, 7, 43, 601, DateTimeKind.Utc).AddTicks(6558),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 65.0m,
@@ -299,7 +299,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             ClientId = 2,
-                            OrderDate = new DateTime(2026, 4, 16, 1, 56, 46, 6, DateTimeKind.Utc).AddTicks(568),
+                            OrderDate = new DateTime(2026, 5, 25, 21, 7, 43, 601, DateTimeKind.Utc).AddTicks(6568),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 35.0m,
@@ -309,7 +309,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             ClientId = 3,
-                            OrderDate = new DateTime(2026, 4, 16, 1, 56, 46, 6, DateTimeKind.Utc).AddTicks(569),
+                            OrderDate = new DateTime(2026, 5, 25, 21, 7, 43, 601, DateTimeKind.Utc).AddTicks(6574),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 20.0m,
@@ -653,7 +653,7 @@ namespace Polleria.Migrations
                         {
                             Id = 1,
                             Email = "admin@empresa.com",
-                            IsVerified = false,
+                            IsVerified = true,
                             Name = "Admin",
                             PasswordHash = "$2a$11$g9p.pmoBRECs8uL3nf0ns.ljh.I/VXgF9Mw/aT6LeVEGfz8oQ/QYG",
                             RoleId = 1
@@ -662,7 +662,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             Email = "mozo1@example.com",
-                            IsVerified = false,
+                            IsVerified = true,
                             Name = "Mozo 1",
                             PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
                             RoleId = 2
@@ -671,7 +671,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             Email = "delivery1@example.com",
-                            IsVerified = false,
+                            IsVerified = true,
                             Name = "Delivery 1",
                             PasswordHash = "AQAAAAIAAYagAAAAEP0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O0O",
                             RoleId = 3

@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 // --- 1. Database Connection ---
 builder.Services.AddDbContext<PolleriaDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("connectionstringFred"),
+        builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("Polleria")));
 
 // --- 1.1 CORS ---
