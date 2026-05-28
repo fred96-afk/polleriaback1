@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Polleria")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7321f4ebd5992f6acd0ece6edbe8d225323a2e38")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+de3cc7fd3223ef763a94b089f7076ef41bbcf3fc")]
 [assembly: System.Reflection.AssemblyProductAttribute("Polleria")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Polleria")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

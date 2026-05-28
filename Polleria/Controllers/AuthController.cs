@@ -28,11 +28,6 @@ public class AuthController(
             return Unauthorized("Email o contraseña incorrectos.");
         }
 
-        if (!user.IsVerified)
-        {
-            return BadRequest("Debes verificar tu correo electrónico antes de iniciar sesión.");
-        }
-
         var role = await roleRepository.GetByIdAsync(user.RoleId);
         var roleName = role?.Name ?? "User"; // Default to "User" if role not found
 
@@ -68,11 +63,6 @@ public class AuthController(
             return Unauthorized("Acceso no autorizado: los clientes deben usar el endpoint de login normal.");
         }
 
-        if (!user.IsVerified && !IsInternalRole(roleName))
-        {
-            return BadRequest("Debes verificar tu correo electrónico antes de iniciar sesión.");
-        }
-
         var token = jwtService.GenerateToken(user, roleName);
         return Ok(new { Token = token, Role = roleName });
     }
@@ -86,15 +76,7 @@ public class AuthController(
 
         if (existingUser != null)
         {
-            if (existingUser.IsVerified)
-            {
-                return BadRequest("El email ya está registrado y verificado.");
-            }
-            
-            // Si el usuario existe pero no está verificado, lo eliminamos para permitir un nuevo registro limpio
-            // (esto renovará el token de verificación y permitirá corregir datos si se equivocó)
-            userRepository.Remove(existingUser);
-            await userRepository.SaveChangesAsync();
+            return BadRequest("El email ya está registrado.");
         }
 
         // Assign a default client role to the new user
