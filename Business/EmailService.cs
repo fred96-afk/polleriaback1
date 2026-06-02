@@ -1,30 +1,41 @@
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
 using IBusiness;
-using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
-using MimeKit;
 using Models;
 
 namespace Business;
 
-public class EmailService(IOptions<EmailSettings> emailSettings) : IEmailService
+public class EmailService(IOptions<EmailSettings> emailSettings, HttpClient httpClient) : IEmailService
 {
     private readonly EmailSettings _settings = emailSettings.Value;
 
     public async Task SendEmailAsync(string to, string subject, string body)
     {
-        var message = new MimeMessage();
-        message.From.Add(new MailboxAddress(_settings.SenderName, _settings.SenderEmail));
-        message.To.Add(new MailboxAddress("", to));
-        message.Subject = subject;
+        var emailData = new
+        {
+            from = $"{_settings.SenderName} <{_settings.SenderEmail}>",
+            to = new[] { to },
+            subject = subject,
+            html = body
+        };
 
-        var bodyBuilder = new BodyBuilder { HtmlBody = body };
-        message.Body = bodyBuilder.ToMessageBody();
+        var json = JsonSerializer.Serialize(emailData);
+        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.resend.com/emails")
+        {
+            Content = new StringContent(json, Encoding.UTF8, "application/json")
+        };
 
-        using var client = new SmtpClient();
-        await client.ConnectAsync(_settings.SmtpServer, _settings.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls);
-        await client.AuthenticateAsync(_settings.SmtpUser, _settings.SmtpPass);
-        await client.SendAsync(message);
-        await client.DisconnectAsync(true);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _settings.ResendApiKey);
+
+        var response = await httpClient.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var error = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error sending email via Resend: {error}");
+        }
     }
 
     public async Task SendVerificationEmailAsync(string to, string name, string token)

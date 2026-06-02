@@ -1,0 +1,16 @@
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/bin/Release/net8.0/IRepository.deps.json
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/bin/Release/net8.0/IRepository.dll
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/bin/Release/net8.0/IRepository.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/bin/Release/net8.0/DbModel.dll
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/bin/Release/net8.0/DbModel.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.csproj.AssemblyReference.cache
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.GeneratedMSBuildEditorConfig.editorconfig
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.AssemblyInfoInputs.cache
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.AssemblyInfo.cs
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.csproj.CoreCompileInputs.cache
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.sourcelink.json
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IReposit.1D40EF52.Up2Date
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.dll
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/refint/IRepository.dll
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/IRepository.pdb
+/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/Release/net8.0/ref/IRepository.dll

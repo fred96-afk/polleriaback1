@@ -33,23 +33,12 @@ public class UserBusiness(
         // Hashear la contraseña con salt+pepper antes de guardar
         entity.PasswordHash = passwordHasher.HashPassword(request.Password);
 
-        // Generar token de verificación
-        entity.VerificationToken = Guid.NewGuid().ToString();
-        entity.IsVerified = false;
+        // Ya no es necesario el token de verificación, el usuario se marca como verificado automáticamente
+        entity.VerificationToken = null;
+        entity.IsVerified = true;
 
         await repository.AddAsync(entity);
         await repository.SaveChangesAsync();
-        
-        // Enviar correo de verificación de forma asíncrona (podrías usar un job de fondo si quieres que el registro sea más rápido)
-        try 
-        {
-            await emailService.SendVerificationEmailAsync(entity.Email, entity.Name, entity.VerificationToken);
-        }
-        catch (Exception ex)
-        {
-            // Loggear el error del correo, pero no detener el registro
-            Console.WriteLine($"Error enviando correo: {ex.Message}");
-        }
         
         return mapper.Map<UserResponse>(entity);
     }
@@ -82,7 +71,7 @@ public class UserBusiness(
 
         var users = await repository.FindAsync(u => u.Email == email.Trim());
         var user = users.FirstOrDefault();
-        if (user == null || !user.IsVerified)
+        if (user == null)
         {
             return;
         }

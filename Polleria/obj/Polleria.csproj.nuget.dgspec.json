@@ -74,10 +74,6 @@
               "target": "Package",
               "version": "[1.28.0, )"
             },
-            "MailKit": {
-              "target": "Package",
-              "version": "[4.15.1, )"
-            },
             "Microsoft.Extensions.Configuration": {
               "target": "Package",
               "version": "[8.0.0, )"
@@ -89,10 +85,6 @@
             "Microsoft.IdentityModel.Tokens": {
               "target": "Package",
               "version": "[8.17.0, )"
-            },
-            "MimeKit": {
-              "target": "Package",
-              "version": "[4.15.1, )"
             },
             "PusherServer": {
               "target": "Package",
