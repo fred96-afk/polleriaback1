@@ -61,14 +61,12 @@ builder.Services.AddScoped<ICatalogoBusiness, CatalogoBusiness>();
 builder.Services.AddScoped<IMercadoPagoBusiness, MercadoPagoBusiness>();
 builder.Services.AddScoped<INubeFactBusiness, NubeFactBusiness>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
-builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddScoped<IPusherService, PusherService>();
 builder.Services.AddScoped<IReportBusiness, ReportBusiness>();
 builder.Services.AddScoped<IDashboardBusiness, DashboardBusiness>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
-
-builder.Services.AddHttpClient();
 
 // --- 5. Security Services ---
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();

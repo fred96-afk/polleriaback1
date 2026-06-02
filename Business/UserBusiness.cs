@@ -33,12 +33,22 @@ public class UserBusiness(
         // Hashear la contraseña con salt+pepper antes de guardar
         entity.PasswordHash = passwordHasher.HashPassword(request.Password);
 
-        // Ya no es necesario el token de verificación, el usuario se marca como verificado automáticamente
-        entity.VerificationToken = null;
-        entity.IsVerified = true;
+        // Generar token de verificación
+        entity.VerificationToken = Guid.NewGuid().ToString("N");
+        entity.IsVerified = false;
 
         await repository.AddAsync(entity);
         await repository.SaveChangesAsync();
+
+        try
+        {
+            await emailService.SendVerificationEmailAsync(entity.Email, entity.Name, entity.VerificationToken);
+        }
+        catch (Exception ex)
+        {
+            // Log error but don't fail registration
+            Console.WriteLine($"Error enviando correo de verificación: {ex.Message}");
+        }
         
         return mapper.Map<UserResponse>(entity);
     }
