@@ -18,6 +18,7 @@ public static class RolePermissionSeed
             new RolePermission { RoleId = 1, PermissionId = 7 },
             new RolePermission { RoleId = 1, PermissionId = 8 },
             new RolePermission { RoleId = 1, PermissionId = 9 },
+            new RolePermission { RoleId = 1, PermissionId = 10 },
 
             // Waiter
             new RolePermission { RoleId = 2, PermissionId = 2 }, // Ver pedidos
@@ -31,7 +32,12 @@ public static class RolePermissionSeed
             new RolePermission { RoleId = 5, PermissionId = 1 }, // Dashboard
             new RolePermission { RoleId = 5, PermissionId = 2 }, // Ver pedidos
             new RolePermission { RoleId = 5, PermissionId = 7 }, // Ver reportes
-            new RolePermission { RoleId = 5, PermissionId = 9 }  // Gestionar pagos
+            new RolePermission { RoleId = 5, PermissionId = 9 }, // Gestionar pagos
+
+            // Chef
+            new RolePermission { RoleId = 6, PermissionId = 1 }, // Dashboard (para ver resumen)
+            new RolePermission { RoleId = 6, PermissionId = 2 }, // Ver pedidos
+            new RolePermission { RoleId = 6, PermissionId = 10 } // Cambiar estados (Preparando, Listo)
         );
     }
 }

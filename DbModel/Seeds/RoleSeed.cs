@@ -12,7 +12,8 @@ public static class RoleSeed
             new Role { Id = 2, Name = "Waiter" },
             new Role { Id = 3, Name = "Delivery" },
             new Role { Id = 4, Name = "Client" },
-            new Role { Id = 5, Name = "Cashier" }
+            new Role { Id = 5, Name = "Cashier" },
+            new Role { Id = 6, Name = "Chef" }
         );
     }
 }

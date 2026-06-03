@@ -292,7 +292,7 @@ namespace Polleria.Migrations
                             Id = 1,
                             ClientId = 1,
                             DeliveryUserId = 3,
-                            OrderDate = new DateTime(2026, 6, 3, 14, 49, 44, 803, DateTimeKind.Utc).AddTicks(4512),
+                            OrderDate = new DateTime(2026, 6, 3, 20, 27, 35, 357, DateTimeKind.Utc).AddTicks(6385),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 65.0m,
@@ -303,7 +303,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             ClientId = 2,
-                            OrderDate = new DateTime(2026, 6, 3, 14, 49, 44, 803, DateTimeKind.Utc).AddTicks(4532),
+                            OrderDate = new DateTime(2026, 6, 3, 20, 27, 35, 357, DateTimeKind.Utc).AddTicks(6398),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 35.0m,
@@ -314,7 +314,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             ClientId = 3,
-                            OrderDate = new DateTime(2026, 6, 3, 14, 49, 44, 803, DateTimeKind.Utc).AddTicks(4544),
+                            OrderDate = new DateTime(2026, 6, 3, 20, 27, 35, 357, DateTimeKind.Utc).AddTicks(6402),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 20.0m,
@@ -533,6 +533,12 @@ namespace Polleria.Migrations
                             Id = 9,
                             Code = "orders.pay",
                             Name = "Gestionar Pagos"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Code = "orders.status",
+                            Name = "Cambiar Estados"
                         });
                 });
 
@@ -642,6 +648,11 @@ namespace Polleria.Migrations
                         {
                             Id = 5,
                             Name = "Cashier"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Chef"
                         });
                 });
 
@@ -707,6 +718,11 @@ namespace Polleria.Migrations
                         },
                         new
                         {
+                            RoleId = 1,
+                            PermissionId = 10
+                        },
+                        new
+                        {
                             RoleId = 2,
                             PermissionId = 2
                         },
@@ -744,6 +760,21 @@ namespace Polleria.Migrations
                         {
                             RoleId = 5,
                             PermissionId = 9
+                        },
+                        new
+                        {
+                            RoleId = 6,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 6,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 6,
+                            PermissionId = 10
                         });
                 });
 

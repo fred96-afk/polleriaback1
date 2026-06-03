@@ -16,7 +16,8 @@ public static class PermissionSeed
             new Permission { Id = 6, Name = "Gestionar Roles", Code = "roles.manage" },
             new Permission { Id = 7, Name = "Ver Reportes", Code = "reports.view" },
             new Permission { Id = 8, Name = "Gestionar Catálogo", Code = "catalog.manage" },
-            new Permission { Id = 9, Name = "Gestionar Pagos", Code = "orders.pay" }
+            new Permission { Id = 9, Name = "Gestionar Pagos", Code = "orders.pay" },
+            new Permission { Id = 10, Name = "Cambiar Estados", Code = "orders.status" }
         );
     }
 }

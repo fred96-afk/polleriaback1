@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Polleria.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class AddChefRole : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -101,6 +101,20 @@ namespace Polleria.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Permissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Permissions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -173,6 +187,30 @@ namespace Polleria.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RolePermission",
+                columns: table => new
+                {
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    PermissionId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolePermission", x => new { x.RoleId, x.PermissionId });
+                    table.ForeignKey(
+                        name: "FK_RolePermission_Permissions_PermissionId",
+                        column: x => x.PermissionId,
+                        principalTable: "Permissions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_RolePermission_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -183,6 +221,8 @@ namespace Polleria.Migrations
                     UserId = table.Column<int>(type: "int", nullable: false),
                     DeliveryUserId = table.Column<int>(type: "int", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    TableNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     PaymentStatus = table.Column<int>(type: "int", nullable: false)
                 },
@@ -283,6 +323,23 @@ namespace Polleria.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Permissions",
+                columns: new[] { "Id", "Code", "Name" },
+                values: new object[,]
+                {
+                    { 1, "dashboard.view", "Dashboard" },
+                    { 2, "orders.view", "Ver Pedidos" },
+                    { 3, "orders.create", "Crear Pedidos" },
+                    { 4, "orders.edit", "Editar Pedidos" },
+                    { 5, "users.manage", "Gestionar Usuarios" },
+                    { 6, "roles.manage", "Gestionar Roles" },
+                    { 7, "reports.view", "Ver Reportes" },
+                    { 8, "catalog.manage", "Gestionar Catálogo" },
+                    { 9, "orders.pay", "Gestionar Pagos" },
+                    { 10, "orders.status", "Cambiar Estados" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Products",
                 columns: new[] { "Id", "BasePrice", "CategoryId", "Description", "ImageUrl", "Name", "SalePrice" },
                 values: new object[,]
@@ -300,7 +357,9 @@ namespace Polleria.Migrations
                     { 1, "Admin" },
                     { 2, "Waiter" },
                     { 3, "Delivery" },
-                    { 4, "Client" }
+                    { 4, "Client" },
+                    { 5, "Cashier" },
+                    { 6, "Chef" }
                 });
 
             migrationBuilder.InsertData(
@@ -325,12 +384,40 @@ namespace Polleria.Migrations
 
             migrationBuilder.InsertData(
                 table: "Orders",
-                columns: new[] { "Id", "ClientId", "DeliveryUserId", "OrderDate", "PaymentStatus", "Status", "TotalAmount", "UserId" },
+                columns: new[] { "Id", "ClientId", "DeliveryUserId", "OrderDate", "PaymentStatus", "Status", "TableNumber", "TotalAmount", "Type", "UserId" },
                 values: new object[,]
                 {
-                    { 1, 1, 3, new DateTime(2026, 5, 25, 21, 7, 43, 601, DateTimeKind.Utc).AddTicks(6558), 0, 0, 65.0m, 2 },
-                    { 2, 2, null, new DateTime(2026, 5, 25, 21, 7, 43, 601, DateTimeKind.Utc).AddTicks(6568), 0, 0, 35.0m, 2 },
-                    { 3, 3, null, new DateTime(2026, 5, 25, 21, 7, 43, 601, DateTimeKind.Utc).AddTicks(6574), 0, 0, 20.0m, 1 }
+                    { 1, 1, 3, new DateTime(2026, 6, 3, 20, 27, 35, 357, DateTimeKind.Utc).AddTicks(6385), 0, 0, null, 65.0m, 0, 2 },
+                    { 2, 2, null, new DateTime(2026, 6, 3, 20, 27, 35, 357, DateTimeKind.Utc).AddTicks(6398), 0, 0, null, 35.0m, 0, 2 },
+                    { 3, 3, null, new DateTime(2026, 6, 3, 20, 27, 35, 357, DateTimeKind.Utc).AddTicks(6402), 0, 0, null, 20.0m, 0, 1 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "RolePermission",
+                columns: new[] { "PermissionId", "RoleId" },
+                values: new object[,]
+                {
+                    { 1, 1 },
+                    { 2, 1 },
+                    { 3, 1 },
+                    { 4, 1 },
+                    { 5, 1 },
+                    { 6, 1 },
+                    { 7, 1 },
+                    { 8, 1 },
+                    { 9, 1 },
+                    { 10, 1 },
+                    { 2, 2 },
+                    { 3, 2 },
+                    { 4, 2 },
+                    { 2, 3 },
+                    { 1, 5 },
+                    { 2, 5 },
+                    { 7, 5 },
+                    { 9, 5 },
+                    { 1, 6 },
+                    { 2, 6 },
+                    { 10, 6 }
                 });
 
             migrationBuilder.InsertData(
@@ -378,41 +465,15 @@ namespace Polleria.Migrations
                 table: "Products",
                 column: "CategoryId");
 
-            migrationBuilder.Sql(
-                """
-                CREATE OR ALTER PROCEDURE dbo.sp_GetOrdersByDateRange
-                    @StartDate DATETIME2,
-                    @EndDateExclusive DATETIME2
-                AS
-                BEGIN
-                    SET NOCOUNT ON;
-
-                    SELECT
-                        Id,
-                        OrderDate,
-                        ClientId,
-                        UserId,
-                        DeliveryUserId,
-                        TotalAmount,
-                        Status,
-                        PaymentStatus
-                    FROM Orders
-                    WHERE OrderDate >= @StartDate
-                      AND OrderDate < @EndDateExclusive
-                    ORDER BY OrderDate DESC;
-                END
-                """);
+            migrationBuilder.CreateIndex(
+                name: "IX_RolePermission_PermissionId",
+                table: "RolePermission",
+                column: "PermissionId");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql(
-                """
-                IF OBJECT_ID(N'dbo.sp_GetOrdersByDateRange', N'P') IS NOT NULL
-                    DROP PROCEDURE dbo.sp_GetOrdersByDateRange;
-                """);
-
             migrationBuilder.DropTable(
                 name: "Banners");
 
@@ -426,7 +487,7 @@ namespace Polleria.Migrations
                 name: "Payments");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "RolePermission");
 
             migrationBuilder.DropTable(
                 name: "Orders");
@@ -436,6 +497,12 @@ namespace Polleria.Migrations
 
             migrationBuilder.DropTable(
                 name: "Sides");
+
+            migrationBuilder.DropTable(
+                name: "Permissions");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Clients");
