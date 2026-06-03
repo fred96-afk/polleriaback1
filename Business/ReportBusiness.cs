@@ -83,7 +83,7 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
                             c.Item().Text($"{leastSold?.Quantity ?? 0} unidades").FontSize(10);
                         });
                         row.ConstantItem(10);
-                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).BackgroundColor(Colors.Red.Lighten5).Column(c =>
+                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Background(Colors.Red.Lighten5).Column(c =>
                         {
                             c.Item().Text("TOTAL RECAUDADO").FontSize(8).SemiBold().FontColor(Colors.Red.Medium);
                             c.Item().Text($"S/ {totalAmount:F2}").FontSize(14).SemiBold().FontColor(Colors.Red.Medium);
@@ -91,7 +91,7 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
                         });
                     });
 
-                    col.Item().Text("Detalle de Ventas por Producto").FontSize(12).SemiBold().PaddingBottom(5);
+                    col.Item().PaddingBottom(5).Text("Detalle de Ventas por Producto").FontSize(12).SemiBold();
 
                     col.Item().Table(table =>
                     {
