@@ -20,9 +20,23 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
     {
         var orders = await orderRepository.GetByDateRangeAsync(request.StartDate, request.EndDate);
         var orderList = orders.ToList();
-        
-        var clients = await clientRepository.GetAllAsync();
-        var clientDict = clients.ToDictionary(c => c.Id, c => c.Name);
+
+        // Agrupar ventas por producto
+        var productSales = orderList
+            .SelectMany(o => o.OrderDetails)
+            .GroupBy(d => new { d.ProductId, ProductName = d.Product?.Name ?? $"Producto {d.ProductId}" })
+            .Select(g => new
+            {
+                g.Key.ProductName,
+                Quantity = g.Sum(d => d.Quantity),
+                Total = g.Sum(d => d.Subtotal)
+            })
+            .OrderByDescending(x => x.Quantity)
+            .ToList();
+
+        var totalAmount = orderList.Sum(o => o.TotalAmount);
+        var mostSold = productSales.FirstOrDefault();
+        var leastSold = productSales.LastOrDefault();
 
         var document = Document.Create(container =>
         {
@@ -39,7 +53,7 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
                     row.RelativeItem().Column(col =>
                     {
                         col.Item().Text("POLLERÍA EL GIGANTE").FontSize(20).SemiBold().FontColor(Colors.Red.Medium);
-                        col.Item().Text("Reporte de Ventas").FontSize(14);
+                        col.Item().Text("Reporte Estadístico de Ventas por Producto").FontSize(14);
                         col.Item().Text($"Periodo: {request.StartDate:dd/MM/yyyy} - {request.EndDate:dd/MM/yyyy}").FontSize(10);
                     });
 
@@ -52,22 +66,49 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
                 // Content
                 page.Content().PaddingVertical(10).Column(col =>
                 {
+                    // Resumen Estadístico
+                    col.Item().PaddingBottom(10).Row(row =>
+                    {
+                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Column(c =>
+                        {
+                            c.Item().Text("PRODUCTO MÁS VENDIDO").FontSize(8).SemiBold().FontColor(Colors.Grey.Medium);
+                            c.Item().Text(mostSold?.ProductName ?? "N/A").FontSize(12).SemiBold();
+                            c.Item().Text($"{mostSold?.Quantity ?? 0} unidades").FontSize(10);
+                        });
+                        row.ConstantItem(10);
+                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Column(c =>
+                        {
+                            c.Item().Text("PRODUCTO MENOS VENDIDO").FontSize(8).SemiBold().FontColor(Colors.Grey.Medium);
+                            c.Item().Text(leastSold?.ProductName ?? "N/A").FontSize(12).SemiBold();
+                            c.Item().Text($"{leastSold?.Quantity ?? 0} unidades").FontSize(10);
+                        });
+                        row.ConstantItem(10);
+                        row.RelativeItem().Border(1).BorderColor(Colors.Grey.Lighten2).Padding(5).BackgroundColor(Colors.Red.Lighten5).Column(c =>
+                        {
+                            c.Item().Text("TOTAL RECAUDADO").FontSize(8).SemiBold().FontColor(Colors.Red.Medium);
+                            c.Item().Text($"S/ {totalAmount:F2}").FontSize(14).SemiBold().FontColor(Colors.Red.Medium);
+                            c.Item().Text($"{orderList.Count} pedidos").FontSize(10);
+                        });
+                    });
+
+                    col.Item().Text("Detalle de Ventas por Producto").FontSize(12).SemiBold().PaddingBottom(5);
+
                     col.Item().Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
                         {
                             columns.ConstantColumn(30); // #
-                            columns.ConstantColumn(100); // Fecha
-                            columns.RelativeColumn();   // Cliente
-                            columns.ConstantColumn(80);  // Total
+                            columns.RelativeColumn();   // Producto
+                            columns.ConstantColumn(80);  // Cantidad
+                            columns.ConstantColumn(100); // Total S/
                         });
 
                         table.Header(header =>
                         {
                             header.Cell().Element(CellStyle).Text("#");
-                            header.Cell().Element(CellStyle).Text("Fecha");
-                            header.Cell().Element(CellStyle).Text("Cliente");
-                            header.Cell().Element(CellStyle).Text("Total");
+                            header.Cell().Element(CellStyle).Text("Producto");
+                            header.Cell().Element(CellStyle).AlignRight().Text("Cant.");
+                            header.Cell().Element(CellStyle).AlignRight().Text("Total S/");
 
                             static IContainer CellStyle(IContainer container)
                             {
@@ -79,30 +120,23 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
                         });
 
                         int i = 1;
-                        foreach (var order in orderList)
+                        if (!productSales.Any())
+                        {
+                            table.Cell().ColumnSpan(4).PaddingVertical(20).AlignCenter().Text("No se encontraron ventas en este periodo.").Italic();
+                        }
+                        
+                        foreach (var item in productSales)
                         {
                             table.Cell().Element(CellStyle).Text(i++.ToString());
-                            table.Cell().Element(CellStyle).Text(order.OrderDate.ToString("dd/MM/yyyy HH:mm"));
-                            
-                            string clientName = "General";
-                            if (order.ClientId.HasValue && clientDict.TryGetValue(order.ClientId.Value, out var name))
-                                clientName = name;
-
-                            table.Cell().Element(CellStyle).Text(clientName);
-                            table.Cell().Element(CellStyle).AlignRight().Text($"S/ {order.TotalAmount:F2}");
+                            table.Cell().Element(CellStyle).Text(item.ProductName);
+                            table.Cell().Element(CellStyle).AlignRight().Text(item.Quantity.ToString());
+                            table.Cell().Element(CellStyle).AlignRight().Text($"S/ {item.Total:F2}");
 
                             static IContainer CellStyle(IContainer container)
                             {
                                 return container.PaddingVertical(5).BorderBottom(1).BorderColor(Colors.Grey.Lighten2);
                             }
                         }
-                    });
-
-                    col.Item().PaddingTop(10).AlignRight().Column(summary =>
-                    {
-                        var totalAmount = orderList.Sum(o => o.TotalAmount);
-                        summary.Item().Text($"Total de Pedidos: {orderList.Count}").FontSize(11);
-                        summary.Item().Text($"Monto Total: S/ {totalAmount:F2}").FontSize(14).SemiBold().FontColor(Colors.Red.Medium);
                     });
                 });
 
@@ -123,65 +157,67 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
     {
         var orders = await orderRepository.GetByDateRangeAsync(request.StartDate, request.EndDate);
         var orderList = orders.ToList();
-        
-        var clients = await clientRepository.GetAllAsync();
-        var clientDict = clients.ToDictionary(c => c.Id, c => c.Name);
+
+        var productSales = orderList
+            .SelectMany(o => o.OrderDetails)
+            .GroupBy(d => new { d.ProductId, ProductName = d.Product?.Name ?? $"Producto {d.ProductId}" })
+            .Select(g => new
+            {
+                g.Key.ProductName,
+                Quantity = g.Sum(d => d.Quantity),
+                Total = g.Sum(d => d.Subtotal)
+            })
+            .OrderByDescending(x => x.Quantity)
+            .ToList();
 
         using var workbook = new XLWorkbook();
-        var worksheet = workbook.Worksheets.Add("Ventas");
+        var worksheet = workbook.Worksheets.Add("Ventas por Producto");
 
         // Title
-        var titleRange = worksheet.Range("A1:D1");
-        titleRange.Merge().Value = "REPORTE DE VENTAS - POLLERÍA EL GIGANTE";
+        var titleRange = worksheet.Range("A1:C1");
+        titleRange.Merge().Value = "REPORTE DE VENTAS POR PRODUCTO - POLLERÍA EL GIGANTE";
         titleRange.Style.Font.Bold = true;
         titleRange.Style.Font.FontSize = 16;
         titleRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
         // Date Range
         worksheet.Cell("A2").Value = $"Periodo: {request.StartDate:dd/MM/yyyy} - {request.EndDate:dd/MM/yyyy}";
-        worksheet.Range("A2:D2").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+        worksheet.Range("A2:C2").Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
         // Headers
-        var headers = new[] { "ID", "Fecha", "Cliente", "Total (S/)" };
+        var headers = new[] { "Producto", "Cantidad Vendida", "Total Recaudado (S/)" };
         for (int h = 0; h < headers.Length; h++)
         {
             var cell = worksheet.Cell(4, h + 1);
             cell.Value = headers[h];
-            cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#D32F2F"); // Red Medium
+            cell.Style.Fill.BackgroundColor = XLColor.FromHtml("#D32F2F");
             cell.Style.Font.FontColor = XLColor.White;
             cell.Style.Font.Bold = true;
         }
 
         // Data
         int row = 5;
-        foreach (var order in orderList)
+        foreach (var item in productSales)
         {
-            worksheet.Cell(row, 1).Value = order.Id;
-            worksheet.Cell(row, 2).Value = order.OrderDate;
-            
-            string clientName = "General";
-            if (order.ClientId.HasValue && clientDict.TryGetValue(order.ClientId.Value, out var name))
-                clientName = name;
-
-            worksheet.Cell(row, 3).Value = clientName;
-            worksheet.Cell(row, 4).Value = order.TotalAmount;
+            worksheet.Cell(row, 1).Value = item.ProductName;
+            worksheet.Cell(row, 2).Value = item.Quantity;
+            worksheet.Cell(row, 3).Value = item.Total;
             row++;
         }
 
         // Summary
         int lastRow = row;
-        worksheet.Cell(lastRow, 3).Value = "TOTAL:";
+        worksheet.Cell(lastRow, 2).Value = "TOTAL FINAL:";
+        worksheet.Cell(lastRow, 2).Style.Font.Bold = true;
+        worksheet.Cell(lastRow, 3).FormulaA1 = $"=SUM(C5:C{lastRow - 1})";
         worksheet.Cell(lastRow, 3).Style.Font.Bold = true;
-        worksheet.Cell(lastRow, 4).FormulaA1 = $"=SUM(D5:D{lastRow - 1})";
-        worksheet.Cell(lastRow, 4).Style.Font.Bold = true;
-        worksheet.Cell(lastRow, 4).Style.NumberFormat.Format = "S/ #,##0.00";
+        worksheet.Cell(lastRow, 3).Style.NumberFormat.Format = "S/ #,##0.00";
 
         // Formatting
         worksheet.Columns().AdjustToContents();
-        worksheet.Range(4, 1, lastRow, 4).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-        worksheet.Range(4, 1, lastRow, 4).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
-        worksheet.Column(2).Style.DateFormat.Format = "dd/MM/yyyy HH:mm";
-        worksheet.Column(4).Style.NumberFormat.Format = "S/ #,##0.00";
+        worksheet.Range(4, 1, lastRow, 3).Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+        worksheet.Range(4, 1, lastRow, 3).Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+        worksheet.Column(3).Style.NumberFormat.Format = "S/ #,##0.00";
 
         using var stream = new MemoryStream();
         workbook.SaveAs(stream);

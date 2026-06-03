@@ -15,6 +15,7 @@ public class OrderRepository(PolleriaDbContext context) : BaseRepository<Order>(
         return await _dbSet
             .Include(o => o.Client)
             .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Product)
             .Where(o => o.OrderDate >= normalizedStartDate && o.OrderDate <= normalizedEndDate)
             .AsNoTracking()
             .ToListAsync();
