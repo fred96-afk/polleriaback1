@@ -34,6 +34,8 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
             .OrderByDescending(x => x.Quantity)
             .ToList();
 
+        Console.WriteLine($"Generando PDF: {orderList.Count} pedidos, {productSales.Count} productos agrupados.");
+
         var totalAmount = orderList.Sum(o => o.TotalAmount);
         var mostSold = productSales.FirstOrDefault();
         var leastSold = productSales.LastOrDefault();
@@ -45,7 +47,7 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
                 page.Size(PageSizes.A4);
                 page.Margin(1, Unit.Centimetre);
                 page.PageColor(Colors.White);
-                page.DefaultTextStyle(x => x.FontSize(10).FontFamily(Fonts.Verdana));
+                page.DefaultTextStyle(x => x.FontSize(10).FontFamily("Arial"));
 
                 // Header
                 page.Header().Row(row =>
