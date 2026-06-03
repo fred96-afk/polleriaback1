@@ -21,6 +21,8 @@
       <PackageReference Include="AutoMapper" Version="13.0.1" />
       <PackageReference Include="BCrypt.Net-Next" Version="4.1.0" />
       <PackageReference Include="CloudinaryDotNet" Version="1.28.0" />
+      <PackageReference Include="itext7" Version="9.6.0" />
+      <PackageReference Include="itext7.bouncy-castle-adapter" Version="9.6.0" />
       <PackageReference Include="mercadopago-sdk" Version="2.11.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />

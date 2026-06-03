@@ -98,6 +98,14 @@
               "target": "Package",
               "version": "[8.17.0, )"
             },
+            "itext7": {
+              "target": "Package",
+              "version": "[9.6.0, )"
+            },
+            "itext7.bouncy-castle-adapter": {
+              "target": "Package",
+              "version": "[9.6.0, )"
+            },
             "mercadopago-sdk": {
               "target": "Package",
               "version": "[2.11.0, )"

@@ -93,14 +93,9 @@ public class UserBusiness(
         repository.Update(user);
         await repository.SaveChangesAsync();
 
-        try
-        {
-            await emailService.SendPasswordResetEmailAsync(user.Email, user.Name, user.PasswordResetToken);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error enviando correo de recuperación: {ex.Message}");
-        }
+        // Quitamos el try-catch para que el error sea visible en los logs o respuesta
+        Console.WriteLine($"Solicitando envío de correo de recuperación para: {user.Email}");
+        await emailService.SendPasswordResetEmailAsync(user.Email, user.Name, user.PasswordResetToken);
     }
 
     public async Task<PasswordResetResult> ResetPasswordAsync(string token, string newPassword)
