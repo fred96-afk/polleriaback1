@@ -10,14 +10,12 @@ public class OrderRepository(PolleriaDbContext context) : BaseRepository<Order>(
     public async Task<IEnumerable<Order>> GetByDateRangeAsync(DateTime startDate, DateTime endDate)
     {
         var normalizedStartDate = startDate.Date;
-        var normalizedEndDateExclusive = endDate.TimeOfDay == TimeSpan.Zero
-            ? endDate.Date.AddDays(1)
-            : endDate.AddTicks(1);
+        var normalizedEndDate = endDate.Date.AddDays(1).AddTicks(-1);
 
         return await _dbSet
             .Include(o => o.Client)
             .Include(o => o.OrderDetails)
-            .Where(o => o.OrderDate >= normalizedStartDate && o.OrderDate < normalizedEndDateExclusive)
+            .Where(o => o.OrderDate >= normalizedStartDate && o.OrderDate <= normalizedEndDate)
             .AsNoTracking()
             .ToListAsync();
     }
