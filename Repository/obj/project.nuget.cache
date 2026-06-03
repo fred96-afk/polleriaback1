@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fCVscDI3TwU=",
+  "dgSpecHash": "RK8de5DEjm0=",
   "success": true,
-  "projectFilePath": "/home/edgardo/Documentos/polleria/polleriaback/Repository/Repository.csproj",
+  "projectFilePath": "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/Repository.csproj",
   "expectedPackageFiles": [
     "/home/edgardo/.nuget/packages/microsoft.entityframeworkcore/8.0.2/microsoft.entityframeworkcore.8.0.2.nupkg.sha512",
     "/home/edgardo/.nuget/packages/microsoft.entityframeworkcore.abstractions/8.0.2/microsoft.entityframeworkcore.abstractions.8.0.2.nupkg.sha512",

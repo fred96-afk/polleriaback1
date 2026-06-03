@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/edgardo/Documentos/polleria/polleriaback/Polleria/Polleria.csproj": {}
+    "/home/edgardo/Documentos/polleria1/polleriaback1/Polleria/Polleria.csproj": {}
   },
   "projects": {
-    "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj",
         "projectName": "Business",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/Business/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -27,17 +27,17 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj"
               }
             }
           }
@@ -126,14 +126,14 @@
         }
       }
     },
-    "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj",
         "projectName": "DbModel",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -196,14 +196,14 @@
         }
       }
     },
-    "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj",
         "projectName": "IBusiness",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -219,11 +219,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj"
               }
             }
           }
@@ -266,14 +266,14 @@
         }
       }
     },
-    "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj",
         "projectName": "IRepository",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -289,8 +289,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj"
               }
             }
           }
@@ -330,14 +330,14 @@
         }
       }
     },
-    "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj",
         "projectName": "Models",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/Models/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Models/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -353,8 +353,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj"
               }
             }
           }
@@ -397,14 +397,14 @@
         }
       }
     },
-    "/home/edgardo/Documentos/polleria/polleriaback/Polleria/Polleria.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/Polleria/Polleria.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/Polleria/Polleria.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/Polleria/Polleria.csproj",
         "projectName": "Polleria",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Polleria/Polleria.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Polleria/Polleria.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/Polleria/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Polleria/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -420,23 +420,23 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IBusiness/IBusiness.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IBusiness/IBusiness.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Models/Models.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Models/Models.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/Repository/Repository.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Repository/Repository.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/Repository.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/Repository.csproj"
               }
             }
           }
@@ -505,14 +505,14 @@
         }
       }
     },
-    "/home/edgardo/Documentos/polleria/polleriaback/Repository/Repository.csproj": {
+    "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/Repository.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/edgardo/Documentos/polleria/polleriaback/Repository/Repository.csproj",
+        "projectUniqueName": "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/Repository.csproj",
         "projectName": "Repository",
-        "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Repository/Repository.csproj",
+        "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/Repository.csproj",
         "packagesPath": "/home/edgardo/.nuget/packages/",
-        "outputPath": "/home/edgardo/Documentos/polleria/polleriaback/Repository/obj/",
+        "outputPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Repository/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/edgardo/.nuget/NuGet/NuGet.Config"
@@ -528,11 +528,11 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/DbModel/DbModel.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/DbModel/DbModel.csproj"
               },
-              "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj": {
-                "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/IRepository/IRepository.csproj"
+              "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj": {
+                "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/IRepository/IRepository.csproj"
               }
             }
           }

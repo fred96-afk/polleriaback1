@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "YYu/V3BCYf8=",
+  "dgSpecHash": "7YPXWP18JNE=",
   "success": true,
-  "projectFilePath": "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj",
+  "projectFilePath": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj",
   "expectedPackageFiles": [
     "/home/edgardo/.nuget/packages/automapper/13.0.1/automapper.13.0.1.nupkg.sha512",
     "/home/edgardo/.nuget/packages/bcrypt.net-next/4.1.0/bcrypt.net-next.4.1.0.nupkg.sha512",
@@ -129,9 +129,9 @@
       "code": "NU1903",
       "level": "Warning",
       "message": "Package 'AutoMapper' 13.0.1 has a known high severity vulnerability, https://github.com/advisories/GHSA-rvv3-g6hj-g44x",
-      "projectPath": "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj",
+      "projectPath": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj",
       "warningLevel": 1,
-      "filePath": "/home/edgardo/Documentos/polleria/polleriaback/Business/Business.csproj",
+      "filePath": "/home/edgardo/Documentos/polleria1/polleriaback1/Business/Business.csproj",
       "libraryId": "AutoMapper",
       "targetGraphs": [
         "net8.0"

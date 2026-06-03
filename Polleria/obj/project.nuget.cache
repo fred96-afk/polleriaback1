@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Tfq4ymub9Ow=",
+  "dgSpecHash": "M3/zG8G1OAM=",
   "success": true,
-  "projectFilePath": "/home/edgardo/Documentos/polleria/polleriaback/Polleria/Polleria.csproj",
+  "projectFilePath": "/home/edgardo/Documentos/polleria1/polleriaback1/Polleria/Polleria.csproj",
   "expectedPackageFiles": [
     "/home/edgardo/.nuget/packages/automapper/13.0.1/automapper.13.0.1.nupkg.sha512",
     "/home/edgardo/.nuget/packages/azure.core/1.38.0/azure.core.1.38.0.nupkg.sha512",
