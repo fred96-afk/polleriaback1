@@ -28,6 +28,13 @@ public class OrdersController(IOrderBusiness business, INubeFactBusiness nubeFac
         return result == null ? NotFound() : Ok(result);
     }
 
+    [HttpGet("mesa/{tableNumber}")]
+    public async Task<IActionResult> GetByTableNumber(string tableNumber)
+    {
+        var result = await business.GetByTableNumberAsync(tableNumber);
+        return result == null ? NotFound() : Ok(result);
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(OrderRequest request)
     {

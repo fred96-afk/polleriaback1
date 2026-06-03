@@ -23,5 +23,6 @@ public enum OrderType
 {
     Delivery,
     Pickup,
-    POS
+    POS,
+    DineIn
 }

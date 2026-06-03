@@ -12,7 +12,8 @@ public record OrderRequest(
     string? CustomerEmail = null,
     string? CustomerAddress = null,
     string? CustomerPhone = null,
-    bool IsPickup = false
+    bool IsPickup = false,
+    string? TableNumber = null
 );
 
 public record OrderDetailRequest(

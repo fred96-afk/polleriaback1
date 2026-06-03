@@ -19,9 +19,9 @@ public class JwtService : IJwtService
                       ?? throw new InvalidOperationException("JwtSettings not found in configuration.");
     }
 
-    public string GenerateToken(User user, string roleName)
+    public string GenerateToken(User user, string roleName, IEnumerable<string> permissions)
     {
-        var claims = new[]
+        var claims = new List<Claim>
         {
             new Claim(JwtRegisteredClaimNames.Sub, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -29,6 +29,11 @@ public class JwtService : IJwtService
             new Claim(ClaimTypes.Name, user.Name),
             new Claim(ClaimTypes.Role, roleName)
         };
+
+        foreach (var permission in permissions)
+        {
+            claims.Add(new Claim("permission", permission));
+        }
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

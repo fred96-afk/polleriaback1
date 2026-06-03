@@ -263,6 +263,9 @@ namespace Polleria.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("TableNumber")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -289,7 +292,7 @@ namespace Polleria.Migrations
                             Id = 1,
                             ClientId = 1,
                             DeliveryUserId = 3,
-                            OrderDate = new DateTime(2026, 5, 27, 22, 59, 9, 393, DateTimeKind.Utc).AddTicks(4444),
+                            OrderDate = new DateTime(2026, 6, 3, 14, 49, 44, 803, DateTimeKind.Utc).AddTicks(4512),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 65.0m,
@@ -300,7 +303,7 @@ namespace Polleria.Migrations
                         {
                             Id = 2,
                             ClientId = 2,
-                            OrderDate = new DateTime(2026, 5, 27, 22, 59, 9, 393, DateTimeKind.Utc).AddTicks(4460),
+                            OrderDate = new DateTime(2026, 6, 3, 14, 49, 44, 803, DateTimeKind.Utc).AddTicks(4532),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 35.0m,
@@ -311,7 +314,7 @@ namespace Polleria.Migrations
                         {
                             Id = 3,
                             ClientId = 3,
-                            OrderDate = new DateTime(2026, 5, 27, 22, 59, 9, 393, DateTimeKind.Utc).AddTicks(4467),
+                            OrderDate = new DateTime(2026, 6, 3, 14, 49, 44, 803, DateTimeKind.Utc).AddTicks(4544),
                             PaymentStatus = 0,
                             Status = 0,
                             TotalAmount = 20.0m,
@@ -454,6 +457,85 @@ namespace Polleria.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DbModel.Tables.Permission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Permissions");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "dashboard.view",
+                            Name = "Dashboard"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "orders.view",
+                            Name = "Ver Pedidos"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "orders.create",
+                            Name = "Crear Pedidos"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Code = "orders.edit",
+                            Name = "Editar Pedidos"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Code = "users.manage",
+                            Name = "Gestionar Usuarios"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Code = "roles.manage",
+                            Name = "Gestionar Roles"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Code = "reports.view",
+                            Name = "Ver Reportes"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Code = "catalog.manage",
+                            Name = "Gestionar Catálogo"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Code = "orders.pay",
+                            Name = "Gestionar Pagos"
+                        });
+                });
+
             modelBuilder.Entity("DbModel.Tables.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -555,6 +637,113 @@ namespace Polleria.Migrations
                         {
                             Id = 4,
                             Name = "Client"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Cashier"
+                        });
+                });
+
+            modelBuilder.Entity("DbModel.Tables.RolePermission", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermission");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 5
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 6
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 8
+                        },
+                        new
+                        {
+                            RoleId = 1,
+                            PermissionId = 9
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 3
+                        },
+                        new
+                        {
+                            RoleId = 2,
+                            PermissionId = 4
+                        },
+                        new
+                        {
+                            RoleId = 3,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 5,
+                            PermissionId = 1
+                        },
+                        new
+                        {
+                            RoleId = 5,
+                            PermissionId = 2
+                        },
+                        new
+                        {
+                            RoleId = 5,
+                            PermissionId = 7
+                        },
+                        new
+                        {
+                            RoleId = 5,
+                            PermissionId = 9
                         });
                 });
 
@@ -738,6 +927,25 @@ namespace Polleria.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("DbModel.Tables.RolePermission", b =>
+                {
+                    b.HasOne("DbModel.Tables.Permission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DbModel.Tables.Role", "Role")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
             modelBuilder.Entity("DbModel.Tables.Category", b =>
                 {
                     b.Navigation("Products");
@@ -746,6 +954,16 @@ namespace Polleria.Migrations
             modelBuilder.Entity("DbModel.Tables.Order", b =>
                 {
                     b.Navigation("OrderDetails");
+                });
+
+            modelBuilder.Entity("DbModel.Tables.Permission", b =>
+                {
+                    b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("DbModel.Tables.Role", b =>
+                {
+                    b.Navigation("RolePermissions");
                 });
 #pragma warning restore 612, 618
         }

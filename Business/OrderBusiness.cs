@@ -32,6 +32,14 @@ public class OrderBusiness(
             .Select(o => MapToResponse(o, o.OrderDetails));
     }
 
+    public async Task<OrderResponse?> GetByTableNumberAsync(string tableNumber)
+    {
+        var order = await orderRepository.GetByTableNumberAsync(tableNumber);
+        if (order == null) return null;
+
+        return MapToResponse(order, order.OrderDetails);
+    }
+
     public async Task<OrderResponse?> GetByIdAsync(int id)
     {
         var order = await orderRepository.GetByIdWithIncludesAsync(id);
@@ -92,7 +100,8 @@ public class OrderBusiness(
 
         // Determinar el tipo de orden
         var orderType = OrderType.Delivery;
-        if (request.IsPos) orderType = OrderType.POS;
+        if (!string.IsNullOrEmpty(request.TableNumber)) orderType = OrderType.DineIn;
+        else if (request.IsPos) orderType = OrderType.POS;
         else if (request.IsPickup) orderType = OrderType.Pickup;
 
         // 2. Crear la Orden
@@ -104,6 +113,7 @@ public class OrderBusiness(
             DeliveryUserId = request.DeliveryUserId,
             OrderDate = DateTime.UtcNow,
             TotalAmount = 0,
+            TableNumber = request.TableNumber,
             Type = orderType,
             Status = OrderStatus.Pending,
             PaymentStatus = PaymentStatus.Pending
@@ -294,6 +304,7 @@ public class OrderBusiness(
                 d.Quantity,
                 d.UnitPrice,
                 d.Subtotal)).ToList(),
+            order.TableNumber,
             order.Status.ToString(),
             order.PaymentStatus.ToString()
         );

@@ -15,6 +15,7 @@ public record OrderResponse(
     decimal TotalAmount,
     string Type,
     List<OrderDetailResponse> Details,
+    string? TableNumber = null,
     string Status = "Pending",
     string PaymentStatus = "Pending",
     string? PaymentUrl = null,

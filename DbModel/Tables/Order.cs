@@ -17,6 +17,8 @@ public class Order
 
     public decimal TotalAmount { get; set; }
 
+    public string? TableNumber { get; set; }
+
     public OrderType Type { get; set; } = OrderType.Delivery;
 
     public OrderStatus Status { get; set; } = OrderStatus.Pending;

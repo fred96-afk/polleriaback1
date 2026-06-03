@@ -39,8 +39,11 @@ public class AuthController(
             return BadRequest("Please use the /adminlogin endpoint for administrative access.");
         }
 
-        var token = jwtService.GenerateToken(user, roleName);
-        return Ok(new { Token = token, Role = roleName });
+        var roleWithPermissions = await roleRepository.GetByIdWithPermissionsAsync(user.RoleId);
+        var permissions = roleWithPermissions?.RolePermissions.Select(rp => rp.Permission.Code) ?? Enumerable.Empty<string>();
+
+        var token = jwtService.GenerateToken(user, roleName, permissions);
+        return Ok(new { Token = token, Role = roleName, Permissions = permissions });
     }
 
     [HttpPost("adminlogin")]
@@ -63,8 +66,11 @@ public class AuthController(
             return Unauthorized("Acceso no autorizado: los clientes deben usar el endpoint de login normal.");
         }
 
-        var token = jwtService.GenerateToken(user, roleName);
-        return Ok(new { Token = token, Role = roleName });
+        var roleWithPermissions = await roleRepository.GetByIdWithPermissionsAsync(user.RoleId);
+        var permissions = roleWithPermissions?.RolePermissions.Select(rp => rp.Permission.Code) ?? Enumerable.Empty<string>();
+
+        var token = jwtService.GenerateToken(user, roleName, permissions);
+        return Ok(new { Token = token, Role = roleName, Permissions = permissions });
     }
 
 

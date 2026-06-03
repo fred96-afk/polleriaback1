@@ -2,5 +2,6 @@ namespace Models.Roles;
 
 public record RoleResponse(
     int Id,
-    string Name
+    string Name,
+    List<PermissionResponse> Permissions
 );
