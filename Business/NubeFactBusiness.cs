@@ -1,3 +1,4 @@
+using DbModel;
 using System.Net.Http.Json;
 using DbModel.Tables;
 using IBusiness;
@@ -17,7 +18,6 @@ public class NubeFactBusiness(
 {
     private readonly string _token = configuration["NubeFact:Token"] ?? throw new InvalidOperationException("NubeFact Token not found.");
     private readonly string _endpoint = configuration["NubeFact:Endpoint"] ?? throw new InvalidOperationException("NubeFact Endpoint not found.");
-    private static readonly TimeZoneInfo PeruTimeZone = ResolvePeruTimeZone();
 
     public async Task<NubeFactResult> GenerateInvoiceAsync(int orderId)
     {
@@ -40,7 +40,7 @@ public class NubeFactBusiness(
         var total = Math.Round(order.TotalAmount, 2);
         var totalGravada = Math.Round(total / 1.18m, 2);
         var totalIgv = total - totalGravada;
-        var peruNow = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, PeruTimeZone);
+        var peruNow = PeruTimeHelper.Now;
 
         var requestBody = new
         {
@@ -169,31 +169,6 @@ public class NubeFactBusiness(
     private static string BuildUniqueCode(int orderId, DateTime peruNow)
     {
         return $"PED-{orderId}-{peruNow:yyyyMMddHHmmssfff}";
-    }
-
-    private static TimeZoneInfo ResolvePeruTimeZone()
-    {
-        var candidates = new[]
-        {
-            "SA Pacific Standard Time", // Windows
-            "America/Lima" // Linux/macOS
-        };
-
-        foreach (var candidate in candidates)
-        {
-            try
-            {
-                return TimeZoneInfo.FindSystemTimeZoneById(candidate);
-            }
-            catch (TimeZoneNotFoundException)
-            {
-            }
-            catch (InvalidTimeZoneException)
-            {
-            }
-        }
-
-        return TimeZoneInfo.Utc;
     }
 
     private class NubeFactResponse

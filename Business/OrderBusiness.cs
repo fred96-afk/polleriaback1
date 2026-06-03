@@ -1,3 +1,4 @@
+using DbModel;
 using DbModel.Tables;
 using IBusiness;
 using IRepository;
@@ -111,7 +112,7 @@ public class OrderBusiness(
             Client = client, // Seteamos la propiedad de navegación para asegurar que se incluya en la respuesta
             UserId = request.UserId,
             DeliveryUserId = request.DeliveryUserId,
-            OrderDate = DateTime.UtcNow,
+            OrderDate = PeruTimeHelper.Now,
             TotalAmount = 0,
             TableNumber = request.TableNumber,
             Type = orderType,

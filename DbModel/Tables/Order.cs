@@ -7,7 +7,7 @@ public class Order
     [Key]
     public int Id { get; set; }
 
-    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+    public DateTime OrderDate { get; set; } = PeruTimeHelper.Now;
 
     public int? ClientId { get; set; }
 

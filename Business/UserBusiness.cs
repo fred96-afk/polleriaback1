@@ -1,3 +1,4 @@
+using DbModel;
 using AutoMapper;
 using DbModel.Tables;
 using IBusiness;
@@ -87,7 +88,7 @@ public class UserBusiness(
         }
 
         user.PasswordResetToken = Guid.NewGuid().ToString("N");
-        user.PasswordResetTokenExpiresAt = DateTime.UtcNow.AddHours(1);
+        user.PasswordResetTokenExpiresAt = PeruTimeHelper.Now.AddHours(1);
 
         repository.Update(user);
         await repository.SaveChangesAsync();
@@ -114,7 +115,7 @@ public class UserBusiness(
             u.PasswordResetToken == token.Trim());
 
         var user = users.FirstOrDefault();
-        if (user == null || user.PasswordResetTokenExpiresAt == null || user.PasswordResetTokenExpiresAt < DateTime.UtcNow)
+        if (user == null || user.PasswordResetTokenExpiresAt == null || user.PasswordResetTokenExpiresAt < PeruTimeHelper.Now)
         {
             return PasswordResetResult.InvalidToken;
         }

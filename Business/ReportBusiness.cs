@@ -1,3 +1,4 @@
+using DbModel;
 using ClosedXML.Excel;
 using IBusiness;
 using IRepository;
@@ -44,7 +45,7 @@ public class ReportBusiness(IOrderRepository orderRepository, IClientRepository 
 
                     row.RelativeItem().AlignRight().Column(col =>
                     {
-                        col.Item().Text($"Fecha de Emisión: {DateTime.Now:dd/MM/yyyy HH:mm}");
+                        col.Item().Text($"Fecha de Emisión: {PeruTimeHelper.Now:dd/MM/yyyy HH:mm}");
                     });
                 });
 

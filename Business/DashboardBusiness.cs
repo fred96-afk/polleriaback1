@@ -1,3 +1,4 @@
+using DbModel;
 using IBusiness;
 using IRepository;
 using Models.Dashboard;
@@ -44,7 +45,7 @@ public class DashboardBusiness(
         }
 
         // Sales Last 7 Days
-        var sevenDaysAgo = DateTime.UtcNow.Date.AddDays(-7);
+        var sevenDaysAgo = PeruTimeHelper.Now.Date.AddDays(-7);
         var salesLast7Days = ordersList
             .Where(o => o.OrderDate >= sevenDaysAgo)
             .GroupBy(o => o.OrderDate.Date)
