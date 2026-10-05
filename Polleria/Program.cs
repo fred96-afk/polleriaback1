@@ -14,6 +14,9 @@ using Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Soporte para Secret Files en Render (/etc/secrets/appsettings.json)
+builder.Configuration.AddJsonFile("/etc/secrets/appsettings.json", optional: true, reloadOnChange: true);
+
 // --- 1. Database Connection ---
 builder.Services.AddDbContext<PolleriaDbContext>(options =>
 {
