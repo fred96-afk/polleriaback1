@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAngularApp",
         policy =>
         {
-            policy.WithOrigins("http://localhost:4200", "https://polleriafront1.vercel.app")
+            policy.WithOrigins("http://localhost:4200", "https://polleriafront1.vercel.app", "https://polleriafront-one.vercel.app")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
