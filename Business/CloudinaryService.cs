@@ -29,7 +29,8 @@ public class CloudinaryService : ICloudinaryService
         {
             File = new FileDescription(file.FileName, stream),
             Folder = folder,
-            Transformation = new Transformation().Quality("auto").FetchFormat("auto")
+            Format = "webp",
+            Transformation = new Transformation().Quality("auto").FetchFormat("webp")
         };
 
         var uploadResult = await _cloudinary.UploadAsync(uploadParams);

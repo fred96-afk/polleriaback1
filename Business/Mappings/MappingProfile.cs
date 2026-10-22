@@ -1,4 +1,4 @@
-using AutoMapper;
+using Mapster;
 using DbModel.Tables;
 using Models.Clients;
 using Models.Products;
@@ -11,35 +11,35 @@ using Models.Banners;
 
 namespace Business.Mappings;
 
-public class MappingProfile : Profile
+public class MappingProfile : IRegister
 {
-    public MappingProfile()
+    public void Register(TypeAdapterConfig config)
     {
-        CreateMap<Client, ClientResponse>();
-        CreateMap<ClientRequest, Client>();
+        config.NewConfig<Client, ClientResponse>();
+        config.NewConfig<ClientRequest, Client>();
 
-        CreateMap<Product, ProductResponse>();
-        CreateMap<ProductRequest, Product>();
+        config.NewConfig<Product, ProductResponse>();
+        config.NewConfig<ProductRequest, Product>();
 
-        CreateMap<Category, CategoryResponse>();
-        CreateMap<CategoryRequest, Category>();
+        config.NewConfig<Category, CategoryResponse>();
+        config.NewConfig<CategoryRequest, Category>();
 
-        CreateMap<Side, SideResponse>();
-        CreateMap<SideRequest, Side>();
+        config.NewConfig<Side, SideResponse>();
+        config.NewConfig<SideRequest, Side>();
 
-        CreateMap<User, UserResponse>();
-        CreateMap<UserRequest, User>()
-            .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+        config.NewConfig<User, UserResponse>();
+        config.NewConfig<UserRequest, User>()
+            .Ignore(dest => dest.PasswordHash);
 
-        CreateMap<Role, RoleResponse>();
+        config.NewConfig<Role, RoleResponse>();
 
-        CreateMap<Order, OrderResponse>()
-            .ForMember(dest => dest.Details, opt => opt.Ignore()); // Se mapea manualmente o con sub-mapeo
+        config.NewConfig<Order, OrderResponse>()
+            .Ignore(dest => dest.Details); // Se mapea manualmente o con sub-mapeo
         
-        CreateMap<OrderDetail, OrderDetailResponse>();
+        config.NewConfig<OrderDetail, OrderDetailResponse>();
 
-        CreateMap<Banner, BannerResponse>();
-        CreateMap<BannerRequest, Banner>()
-            .ForMember(dest => dest.ImageUrl, opt => opt.Ignore());
+        config.NewConfig<Banner, BannerResponse>();
+        config.NewConfig<BannerRequest, Banner>()
+            .Ignore(dest => dest.ImageUrl);
     }
 }

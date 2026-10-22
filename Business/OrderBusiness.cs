@@ -101,9 +101,9 @@ public class OrderBusiness(
 
         // Determinar el tipo de orden
         var orderType = OrderType.Delivery;
-        if (!string.IsNullOrEmpty(request.TableNumber)) orderType = OrderType.DineIn;
+        if (request.IsPickup) orderType = OrderType.Pickup;
+        else if (!string.IsNullOrEmpty(request.TableNumber)) orderType = OrderType.DineIn;
         else if (request.IsPos) orderType = OrderType.POS;
-        else if (request.IsPickup) orderType = OrderType.Pickup;
 
         // 2. Crear la Orden
         var order = new Order

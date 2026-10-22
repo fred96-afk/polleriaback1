@@ -1,6 +1,8 @@
 using System.Text;
 using Business;
 using Business.Mappings;
+using Mapster;
+using MapsterMapper;
 using Business.Security;
 using DbModel;
 using IBusiness;
@@ -11,6 +13,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Repository;
 using Models;
+using Models.RabbitMQ;
+using Business.RabbitMQ;
+using Business.Services;
+using Business.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +27,7 @@ builder.Configuration.AddJsonFile("/etc/secrets/appsettings.json", optional: tru
 builder.Services.AddDbContext<PolleriaDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("connectionstringsomee"),
+        builder.Configuration.GetConnectionString("DefaultConnection"),
         b => b.MigrationsAssembly("Polleria"));
     options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
@@ -38,11 +44,11 @@ builder.Services.AddCors(options =>
         });
 });
 
-// --- 2. AutoMapper ---
-builder.Services.AddAutoMapper(cfg =>
-{
-    cfg.AddProfile<MappingProfile>();
-});
+// --- 2. Mapster ---
+var typeAdapterConfig = TypeAdapterConfig.GlobalSettings;
+typeAdapterConfig.Scan(typeof(MappingProfile).Assembly);
+builder.Services.AddSingleton(typeAdapterConfig);
+builder.Services.AddScoped<IMapper, ServiceMapper>();
 
 // --- 3. Repositories ---
 builder.Services.AddScoped<IClientRepository, ClientRepository>();
@@ -77,6 +83,16 @@ builder.Services.AddScoped<IReportBusiness, ReportBusiness>();
 builder.Services.AddScoped<IDashboardBusiness, DashboardBusiness>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
+// --- 4.1 RabbitMQ & Report Workers ---
+builder.Services.Configure<RabbitMQSettings>(builder.Configuration.GetSection("RabbitMQ"));
+builder.Services.AddSingleton<IRabbitMQConnectionManager, RabbitMQConnectionManager>();
+builder.Services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
+builder.Services.AddSingleton<IReportStorageService, ReportStorageService>();
+
+// Workers en segundo plano para generación de reportes
+builder.Services.AddHostedService<ExcelReportWorker>();
+builder.Services.AddHostedService<PdfReportWorker>();
 
 // --- 5. Security Services ---
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();

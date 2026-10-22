@@ -1,4 +1,4 @@
-using AutoMapper;
+using MapsterMapper;
 using DbModel.Tables;
 using IBusiness;
 using IRepository;

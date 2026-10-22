@@ -1,5 +1,5 @@
 using DbModel;
-using AutoMapper;
+using MapsterMapper;
 using DbModel.Tables;
 using IBusiness;
 using IBusiness.Security;
@@ -24,7 +24,7 @@ public class UserBusiness(
     public async Task<UserResponse?> GetByIdAsync(int id)
     {
         var e = await repository.GetByIdAsync(id);
-        return mapper.Map<UserResponse>(e);
+        return e == null ? null : mapper.Map<UserResponse>(e);
     }
 
     public async Task<UserResponse> CreateAsync(UserRequest request)
