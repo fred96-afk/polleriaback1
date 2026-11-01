@@ -17,6 +17,7 @@ using Models.RabbitMQ;
 using Business.RabbitMQ;
 using Business.Services;
 using Business.Workers;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,7 +28,7 @@ builder.Configuration.AddJsonFile("/etc/secrets/appsettings.json", optional: tru
 builder.Services.AddDbContext<PolleriaDbContext>(options =>
 {
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
+        builder.Configuration.GetConnectionString("connectionstringsomee"),
         b => b.MigrationsAssembly("Polleria"));
     options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
@@ -40,7 +41,8 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins("http://localhost:4200", "https://polleriafront1.vercel.app", "https://polleriafront-one.vercel.app")
                   .AllowAnyHeader()
-                  .AllowAnyMethod();
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         });
 });
 
@@ -63,6 +65,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IBannerRepository, BannerRepository>();
+builder.Services.AddScoped<ITableRepository, TableRepository>();
 
 // --- 4. Business Services ---
 builder.Services.AddScoped<IClientBusiness, ClientBusiness>();
@@ -78,9 +81,11 @@ builder.Services.AddScoped<IMercadoPagoBusiness, MercadoPagoBusiness>();
 builder.Services.AddScoped<INubeFactBusiness, NubeFactBusiness>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddHttpClient<IEmailService, EmailService>();
-builder.Services.AddScoped<IPusherService, PusherService>();
+builder.Services.AddSingleton<IPusherService, PusherService>();
+builder.Services.Configure<PusherSettings>(builder.Configuration.GetSection("Pusher"));
 builder.Services.AddScoped<IReportBusiness, ReportBusiness>();
 builder.Services.AddScoped<IDashboardBusiness, DashboardBusiness>();
+builder.Services.AddScoped<ITableBusiness, TableBusiness>();
 
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
@@ -109,11 +114,30 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            if (string.IsNullOrEmpty(context.Token))
+            {
+                if (context.Request.Cookies.TryGetValue("auth_token", out var token) && !string.IsNullOrEmpty(token))
+                {
+                    context.Token = token;
+                }
+                else if (context.Request.Cookies.TryGetValue("token", out var legacyToken) && !string.IsNullOrEmpty(legacyToken))
+                {
+                    context.Token = legacyToken;
+                }
+            }
+            return Task.CompletedTask;
+        }
+    };
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(1),
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSection["Issuer"],
         ValidAudience = jwtSection["Audience"],
@@ -123,14 +147,19 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.WithTitle("Pollería API");
+        options.WithTheme(ScalarTheme.Moon);
+    });
+    app.MapGet("/swagger", () => Results.Redirect("/scalar/v1")).ExcludeFromDescription();
 }
 
 app.UseHttpsRedirection();

@@ -608,6 +608,372 @@ namespace Polleria.Migrations
                         });
                 });
 
+            modelBuilder.Entity("DbModel.Tables.RestaurantTable", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Chairs")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("MapId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Number")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Shape")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("X")
+                        .HasColumnType("float");
+
+                    b.Property<double>("Y")
+                        .HasColumnType("float");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tables");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Frente a Entrada",
+                            MapId = "salon-principal",
+                            Name = "Mesa 1",
+                            Number = "1",
+                            Shape = "square",
+                            X = 8.0,
+                            Y = 12.0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Zona Centro",
+                            MapId = "salon-principal",
+                            Name = "Mesa 2",
+                            Number = "2",
+                            Shape = "square",
+                            X = 32.0,
+                            Y = 12.0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Chairs = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Zona Familiar",
+                            MapId = "salon-principal",
+                            Name = "Mesa 3",
+                            Number = "3",
+                            Shape = "rectangle",
+                            X = 56.0,
+                            Y = 12.0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Chairs = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Zona Familiar",
+                            MapId = "salon-principal",
+                            Name = "Mesa 4",
+                            Number = "4",
+                            Shape = "rectangle",
+                            X = 80.0,
+                            Y = 12.0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Pasillo Central",
+                            MapId = "salon-principal",
+                            Name = "Mesa 5",
+                            Number = "5",
+                            Shape = "round",
+                            X = 8.0,
+                            Y = 44.0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Pasillo Central",
+                            MapId = "salon-principal",
+                            Name = "Mesa 6",
+                            Number = "6",
+                            Shape = "round",
+                            X = 32.0,
+                            Y = 44.0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Chairs = 8,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Mesa Grupal",
+                            MapId = "salon-principal",
+                            Name = "Mesa 7",
+                            Number = "7",
+                            Shape = "rectangle",
+                            X = 56.0,
+                            Y = 44.0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Pasillo Central",
+                            MapId = "salon-principal",
+                            Name = "Mesa 8",
+                            Number = "8",
+                            Shape = "round",
+                            X = 80.0,
+                            Y = 44.0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Chairs = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Parejas Ventana",
+                            MapId = "salon-principal",
+                            Name = "Mesa 9",
+                            Number = "9",
+                            Shape = "round",
+                            X = 8.0,
+                            Y = 76.0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Chairs = 2,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Parejas Ventana",
+                            MapId = "salon-principal",
+                            Name = "Mesa 10",
+                            Number = "10",
+                            Shape = "round",
+                            X = 32.0,
+                            Y = 76.0
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Junto a Barra",
+                            MapId = "salon-principal",
+                            Name = "Mesa 11",
+                            Number = "11",
+                            Shape = "square",
+                            X = 56.0,
+                            Y = 76.0
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Salón Principal - Junto a Barra",
+                            MapId = "salon-principal",
+                            Name = "Mesa 12",
+                            Number = "12",
+                            Shape = "square",
+                            X = 80.0,
+                            Y = 76.0
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Terraza Exterior - Vista Avenida",
+                            MapId = "terraza",
+                            Name = "Mesa Terraza 1",
+                            Number = "T-1",
+                            Shape = "round",
+                            X = 15.0,
+                            Y = 20.0
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Terraza Exterior - Vista Avenida",
+                            MapId = "terraza",
+                            Name = "Mesa Terraza 2",
+                            Number = "T-2",
+                            Shape = "round",
+                            X = 45.0,
+                            Y = 20.0
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Chairs = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Terraza Exterior - Área Jardín",
+                            MapId = "terraza",
+                            Name = "Mesa Terraza 3",
+                            Number = "T-3",
+                            Shape = "rectangle",
+                            X = 75.0,
+                            Y = 20.0
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Terraza Exterior - Zona Sombrillas",
+                            MapId = "terraza",
+                            Name = "Mesa Terraza 4",
+                            Number = "T-4",
+                            Shape = "round",
+                            X = 15.0,
+                            Y = 65.0
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Terraza Exterior - Zona Sombrillas",
+                            MapId = "terraza",
+                            Name = "Mesa Terraza 5",
+                            Number = "T-5",
+                            Shape = "round",
+                            X = 45.0,
+                            Y = 65.0
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Chairs = 6,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Terraza Exterior - Área Jardín",
+                            MapId = "terraza",
+                            Name = "Mesa Terraza 6",
+                            Number = "T-6",
+                            Shape = "rectangle",
+                            X = 75.0,
+                            Y = 65.0
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Chairs = 10,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Segundo Piso - Salón Presidencial",
+                            MapId = "segundo-piso",
+                            Name = "Mesa Presidencial",
+                            Number = "VIP-1",
+                            Shape = "rectangle",
+                            X = 25.0,
+                            Y = 30.0
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Chairs = 8,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Segundo Piso - Sala de Eventos",
+                            MapId = "segundo-piso",
+                            Name = "Mesa Corporativa",
+                            Number = "VIP-2",
+                            Shape = "rectangle",
+                            X = 70.0,
+                            Y = 30.0
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Segundo Piso - Balcón Panorámico A",
+                            MapId = "segundo-piso",
+                            Name = "Salón Balcón A",
+                            Number = "VIP-3",
+                            Shape = "round",
+                            X = 25.0,
+                            Y = 70.0
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Chairs = 4,
+                            CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            Location = "Segundo Piso - Balcón Panorámico B",
+                            MapId = "segundo-piso",
+                            Name = "Salón Balcón B",
+                            Number = "VIP-4",
+                            Shape = "round",
+                            X = 70.0,
+                            Y = 70.0
+                        });
+                });
+
             modelBuilder.Entity("DbModel.Tables.Role", b =>
                 {
                     b.Property<int>("Id")

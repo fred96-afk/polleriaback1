@@ -2,6 +2,8 @@ using IBusiness;
 using IRepository;
 using IBusiness.Security;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using Models.Users;
 using DbModel.Tables; // Added for Role access
 using IBusiness.Common;
@@ -17,6 +19,36 @@ public class AuthController(
     IPasswordHasher passwordHasher,
     IJwtService jwtService) : ControllerBase
 {
+    private void SetAuthCookie(string token)
+    {
+        var isHttps = Request.IsHttps;
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = isHttps,
+            SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddMinutes(90), // 1 hora y media (90 minutos)
+            IsEssential = true,
+            Path = "/"
+        };
+
+        Response.Cookies.Append("auth_token", token, cookieOptions);
+    }
+
+    private void RemoveAuthCookie()
+    {
+        var isHttps = Request.IsHttps;
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = isHttps,
+            SameSite = isHttps ? SameSiteMode.None : SameSiteMode.Lax,
+            Path = "/"
+        };
+
+        Response.Cookies.Delete("auth_token", cookieOptions);
+    }
+
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
@@ -43,7 +75,25 @@ public class AuthController(
         var permissions = roleWithPermissions?.RolePermissions.Select(rp => rp.Permission.Code) ?? Enumerable.Empty<string>();
 
         var token = jwtService.GenerateToken(user, roleName, permissions);
-        return Ok(new { Token = token, Role = roleName, Permissions = permissions });
+        SetAuthCookie(token);
+
+        var userDto = new
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = roleName,
+            RoleId = user.RoleId,
+            Permissions = permissions
+        };
+
+        return Ok(new
+        {
+            Token = token,
+            User = userDto,
+            Role = roleName,
+            Permissions = permissions
+        });
     }
 
     [HttpPost("adminlogin")]
@@ -70,7 +120,65 @@ public class AuthController(
         var permissions = roleWithPermissions?.RolePermissions.Select(rp => rp.Permission.Code) ?? Enumerable.Empty<string>();
 
         var token = jwtService.GenerateToken(user, roleName, permissions);
-        return Ok(new { Token = token, Role = roleName, Permissions = permissions });
+        SetAuthCookie(token);
+
+        var userDto = new
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = roleName,
+            RoleId = user.RoleId,
+            Permissions = permissions
+        };
+
+        return Ok(new
+        {
+            Token = token,
+            User = userDto,
+            Role = roleName,
+            Permissions = permissions
+        });
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        RemoveAuthCookie();
+        return Ok(new { message = "Sesión cerrada correctamente." });
+    }
+
+    [Authorize]
+    [HttpGet("me")]
+    public async Task<IActionResult> GetCurrentUser()
+    {
+        var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized("Usuario no identificado.");
+        }
+
+        var user = await userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            return Unauthorized("Usuario no encontrado.");
+        }
+
+        var role = await roleRepository.GetByIdAsync(user.RoleId);
+        var roleName = role?.Name ?? "User";
+
+        var roleWithPermissions = await roleRepository.GetByIdWithPermissionsAsync(user.RoleId);
+        var permissions = roleWithPermissions?.RolePermissions.Select(rp => rp.Permission.Code) ?? Enumerable.Empty<string>();
+
+        return Ok(new
+        {
+            Id = user.Id,
+            Name = user.Name,
+            Email = user.Email,
+            Role = roleName,
+            RoleId = user.RoleId,
+            Permissions = permissions
+        });
     }
 
 

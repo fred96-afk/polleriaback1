@@ -18,7 +18,15 @@ public class ReportsController(
     [HttpPost("queue")]
     public async Task<IActionResult> QueueReport([FromBody] QueueReportRequest request)
     {
-        if (request.StartDate > request.EndDate)
+        var finalStartDate = request.StartDate.HasValue && request.StartDate.Value != default
+            ? request.StartDate.Value
+            : DateTime.Today.AddDays(-30);
+
+        var finalEndDate = request.EndDate.HasValue && request.EndDate.Value != default
+            ? request.EndDate.Value
+            : DateTime.Today;
+
+        if (finalStartDate > finalEndDate)
         {
             return BadRequest(new { message = "La fecha de inicio no puede ser posterior a la fecha de fin." });
         }
@@ -35,8 +43,8 @@ public class ReportsController(
         {
             JobId = Guid.NewGuid().ToString(),
             ReportType = normalizedType,
-            StartDate = request.StartDate,
-            EndDate = request.EndDate,
+            StartDate = finalStartDate,
+            EndDate = finalEndDate,
             Channel = string.IsNullOrWhiteSpace(request.Channel) ? "reports" : request.Channel,
             UserId = request.UserId,
             RequestedAt = DateTime.UtcNow
@@ -68,9 +76,17 @@ public class ReportsController(
     [HttpPost("sales/excel/queue")]
     public async Task<IActionResult> QueueSalesExcel([FromBody] QueueReportRequest? request, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? channel)
     {
-        var finalStartDate = request?.StartDate ?? startDate ?? DateTime.Today.AddDays(-30);
-        var finalEndDate = request?.EndDate ?? endDate ?? DateTime.Today;
-        var finalChannel = request?.Channel ?? channel ?? "reports";
+        var finalStartDate = (request?.StartDate.HasValue == true && request.StartDate.Value != default)
+            ? request.StartDate.Value
+            : (startDate.HasValue && startDate.Value != default ? startDate.Value : DateTime.Today.AddDays(-30));
+
+        var finalEndDate = (request?.EndDate.HasValue == true && request.EndDate.Value != default)
+            ? request.EndDate.Value
+            : (endDate.HasValue && endDate.Value != default ? endDate.Value : DateTime.Today);
+
+        var finalChannel = !string.IsNullOrWhiteSpace(channel) 
+            ? channel 
+            : (!string.IsNullOrWhiteSpace(request?.Channel) ? request.Channel : "reports");
 
         return await QueueReport(new QueueReportRequest
         {
@@ -88,9 +104,17 @@ public class ReportsController(
     [HttpPost("sales/pdf/queue")]
     public async Task<IActionResult> QueueSalesPdf([FromBody] QueueReportRequest? request, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate, [FromQuery] string? channel)
     {
-        var finalStartDate = request?.StartDate ?? startDate ?? DateTime.Today.AddDays(-30);
-        var finalEndDate = request?.EndDate ?? endDate ?? DateTime.Today;
-        var finalChannel = request?.Channel ?? channel ?? "reports";
+        var finalStartDate = (request?.StartDate.HasValue == true && request.StartDate.Value != default)
+            ? request.StartDate.Value
+            : (startDate.HasValue && startDate.Value != default ? startDate.Value : DateTime.Today.AddDays(-30));
+
+        var finalEndDate = (request?.EndDate.HasValue == true && request.EndDate.Value != default)
+            ? request.EndDate.Value
+            : (endDate.HasValue && endDate.Value != default ? endDate.Value : DateTime.Today);
+
+        var finalChannel = !string.IsNullOrWhiteSpace(channel) 
+            ? channel 
+            : (!string.IsNullOrWhiteSpace(request?.Channel) ? request.Channel : "reports");
 
         return await QueueReport(new QueueReportRequest
         {
@@ -130,10 +154,14 @@ public class ReportsController(
             if (matchingFiles.Length > 0)
             {
                 var file = new FileInfo(matchingFiles[0]);
+                var extension = file.Extension.ToLowerInvariant();
+                var reportType = extension == ".xlsx" ? "Excel" : "Pdf";
+
                 return Ok(new
                 {
                     jobId,
                     status = "Completed",
+                    reportType,
                     fileName = file.Name,
                     downloadUrl = reportStorageService.GetDownloadUrl(file.Name),
                     fileSize = file.Length,
@@ -148,6 +176,30 @@ public class ReportsController(
             status = "ProcessingOrQueued",
             message = "El reporte se encuentra en cola o siendo procesado por los workers."
         });
+    }
+
+    /// <summary>
+    /// Obtiene el historial de reportes completados disponibles para descarga.
+    /// </summary>
+    [HttpGet("history")]
+    public async Task<IActionResult> GetReportsHistory()
+    {
+        var reports = await reportStorageService.GetCompletedReportsAsync();
+        return Ok(reports);
+    }
+
+    /// <summary>
+    /// Elimina un reporte generado del almacenamiento en disco.
+    /// </summary>
+    [HttpDelete("{fileName}")]
+    public async Task<IActionResult> DeleteReport(string fileName)
+    {
+        var deleted = await reportStorageService.DeleteReportAsync(fileName);
+        if (!deleted)
+        {
+            return NotFound(new { message = $"El archivo '{fileName}' no fue encontrado." });
+        }
+        return Ok(new { message = $"Reporte '{fileName}' eliminado exitosamente." });
     }
 
     /// <summary>
