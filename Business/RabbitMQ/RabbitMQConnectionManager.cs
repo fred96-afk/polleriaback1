@@ -24,26 +24,61 @@ public class RabbitMQConnectionManager : IRabbitMQConnectionManager
         {
             DispatchConsumersAsync = true,
             AutomaticRecoveryEnabled = true,
-            NetworkRecoveryInterval = TimeSpan.FromSeconds(10)
+            NetworkRecoveryInterval = TimeSpan.FromSeconds(10),
+            RequestedHeartbeat = TimeSpan.FromSeconds(30),
+            ClientProvidedName = "Polleria.API"
         };
 
-        if (!string.IsNullOrWhiteSpace(_settings.Uri))
+        if (!string.IsNullOrWhiteSpace(_settings.Uri) && TryApplyUriSettings(_settings.Uri))
         {
-            try
-            {
-                _factory.Uri = new Uri(_settings.Uri);
-                _logger.LogInformation("RabbitMQ configurado mediante URI amqp.");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "URI de RabbitMQ inválida: {Uri}. Utilizando host por defecto.", _settings.Uri);
-                ApplyHostSettings();
-            }
+            return;
         }
-        else
+
+        ApplyHostSettings();
+    }
+
+    /// <summary>
+    /// Configura la conexión a partir de una URI AMQP/AMQPS (p. ej. CloudAMQP).
+    /// </summary>
+    private bool TryApplyUriSettings(string uriValue)
+    {
+        if (!Uri.TryCreate(uriValue, UriKind.Absolute, out var uri))
         {
-            ApplyHostSettings();
+            _logger.LogError("URI de RabbitMQ inválida: {Uri}. Utilizando configuración por host.", uriValue);
+            return false;
         }
+
+        var isTls = uri.Scheme.Equals("amqps", StringComparison.OrdinalIgnoreCase);
+        if (!isTls && !uri.Scheme.Equals("amqp", StringComparison.OrdinalIgnoreCase))
+        {
+            _logger.LogError("Esquema de URI de RabbitMQ no soportado: {Scheme}. Se esperaba 'amqp' o 'amqps'.", uri.Scheme);
+            return false;
+        }
+
+        var userInfo = uri.UserInfo.Split(':', 2);
+
+        _factory.HostName = uri.Host;
+        _factory.Port = uri.Port > 0 ? uri.Port : (isTls ? 5671 : 5672);
+        _factory.UserName = userInfo.Length > 0 && !string.IsNullOrEmpty(userInfo[0])
+            ? Uri.UnescapeDataString(userInfo[0])
+            : "guest";
+        _factory.Password = userInfo.Length > 1 ? Uri.UnescapeDataString(userInfo[1]) : "guest";
+
+        var vhost = uri.AbsolutePath.Trim('/');
+        _factory.VirtualHost = string.IsNullOrEmpty(vhost) ? "/" : Uri.UnescapeDataString(vhost);
+
+        _factory.Ssl.Enabled = isTls;
+        if (isTls)
+        {
+            _factory.Ssl.ServerName = uri.Host;
+            _factory.Ssl.Version = System.Security.Authentication.SslProtocols.Tls12;
+        }
+
+        _logger.LogInformation(
+            "RabbitMQ configurado mediante URI ({Scheme}) para host: {Host}:{Port}, VHost: {VHost}, TLS: {Tls}",
+            uri.Scheme, _factory.HostName, _factory.Port, _factory.VirtualHost, isTls);
+
+        return true;
     }
 
     private void ApplyHostSettings()
@@ -54,8 +89,16 @@ public class RabbitMQConnectionManager : IRabbitMQConnectionManager
         _factory.Password = string.IsNullOrWhiteSpace(_settings.Password) ? "guest" : _settings.Password;
         _factory.VirtualHost = string.IsNullOrWhiteSpace(_settings.VirtualHost) ? "/" : _settings.VirtualHost;
 
-        _logger.LogInformation("RabbitMQ configurado para host: {Host}:{Port}, VHost: {VHost}",
-            _factory.HostName, _factory.Port, _factory.VirtualHost);
+        // Si el puerto es 5671 se asume TLS (CloudAMQP expone AMQPS ahí).
+        if (_factory.Port == 5671)
+        {
+            _factory.Ssl.Enabled = true;
+            _factory.Ssl.ServerName = _factory.HostName;
+            _factory.Ssl.Version = System.Security.Authentication.SslProtocols.Tls12;
+        }
+
+        _logger.LogInformation("RabbitMQ configurado para host: {Host}:{Port}, VHost: {VHost}, TLS: {Tls}",
+            _factory.HostName, _factory.Port, _factory.VirtualHost, _factory.Ssl.Enabled);
     }
 
     public bool IsConnected => _connection is { IsOpen: true } && !_disposed;
