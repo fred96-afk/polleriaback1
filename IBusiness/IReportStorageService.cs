@@ -1,3 +1,5 @@
+using Models.Reports;
+
 namespace IBusiness;
 
 public interface IReportStorageService
@@ -8,4 +10,7 @@ public interface IReportStorageService
     bool ReportExists(string fileName);
     string GetContentType(string fileName);
     string GetDownloadUrl(string fileName);
+    Task<IEnumerable<ReportFileInfo>> GetCompletedReportsAsync();
+    Task<bool> DeleteReportAsync(string fileName);
 }
+

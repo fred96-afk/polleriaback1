@@ -3,6 +3,6 @@ namespace Models.Users;
 public record UserRequest(
     string Name,
     string Email,
-    string Password,
+    string? Password,
     int RoleId
 );

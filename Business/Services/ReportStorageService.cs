@@ -1,5 +1,6 @@
 using IBusiness;
 using Microsoft.Extensions.Logging;
+using Models.Reports;
 
 namespace Business.Services;
 
@@ -39,8 +40,24 @@ public class ReportStorageService : IReportStorageService
 
         if (!File.Exists(fullPath))
         {
-            _logger.LogWarning("Reporte solicitado no encontrado en disco: {FileName}", safeFileName);
-            return null;
+            if (Directory.Exists(_storageDirectory))
+            {
+                var matching = Directory.GetFiles(_storageDirectory)
+                    .FirstOrDefault(f => string.Equals(Path.GetFileName(f), safeFileName, StringComparison.OrdinalIgnoreCase));
+                if (matching != null)
+                {
+                    fullPath = matching;
+                }
+                else
+                {
+                    _logger.LogWarning("Reporte solicitado no encontrado en disco: {FileName}", safeFileName);
+                    return null;
+                }
+            }
+            else
+            {
+                return null;
+            }
         }
 
         return await File.ReadAllBytesAsync(fullPath);
@@ -74,6 +91,70 @@ public class ReportStorageService : IReportStorageService
     public string GetDownloadUrl(string fileName)
     {
         var safeFileName = Path.GetFileName(fileName);
-        return $"/api/reports/download/{safeFileName}";
+        return $"/api/Reports/download/{safeFileName}";
+    }
+
+    public Task<IEnumerable<ReportFileInfo>> GetCompletedReportsAsync()
+    {
+        var result = new List<ReportFileInfo>();
+
+        if (!Directory.Exists(_storageDirectory))
+        {
+            return Task.FromResult<IEnumerable<ReportFileInfo>>(result);
+        }
+
+        var directoryInfo = new DirectoryInfo(_storageDirectory);
+        var files = directoryInfo.GetFiles()
+            .Where(f => f.Extension.Equals(".xlsx", StringComparison.OrdinalIgnoreCase) ||
+                        f.Extension.Equals(".pdf", StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(f => f.CreationTimeUtc);
+
+        foreach (var file in files)
+        {
+            var extension = file.Extension.ToLowerInvariant();
+            var reportType = extension == ".xlsx" ? "Excel" : "Pdf";
+
+            string? jobId = null;
+            var parts = Path.GetFileNameWithoutExtension(file.Name).Split('_');
+            if (parts.Length >= 2 && Guid.TryParse(parts[1], out _))
+            {
+                jobId = parts[1];
+            }
+
+            result.Add(new ReportFileInfo
+            {
+                FileName = file.Name,
+                DownloadUrl = GetDownloadUrl(file.Name),
+                FileSize = file.Length,
+                CreatedAt = file.CreationTimeUtc,
+                ReportType = reportType,
+                JobId = jobId
+            });
+        }
+
+        return Task.FromResult<IEnumerable<ReportFileInfo>>(result);
+    }
+
+    public Task<bool> DeleteReportAsync(string fileName)
+    {
+        var safeFileName = Path.GetFileName(fileName);
+        var fullPath = Path.Combine(_storageDirectory, safeFileName);
+
+        if (File.Exists(fullPath))
+        {
+            try
+            {
+                File.Delete(fullPath);
+                _logger.LogInformation("Reporte eliminado exitosamente: {FileName}", safeFileName);
+                return Task.FromResult(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar archivo de reporte: {FileName}", safeFileName);
+                return Task.FromResult(false);
+            }
+        }
+
+        return Task.FromResult(false);
     }
 }

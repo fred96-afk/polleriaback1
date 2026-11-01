@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: docker.io/rabbitmq:3-management
+    container_name: rabbitmq-server
+    restart: always
+    environment:
+      # Credenciales de acceso
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=tu_password_seguro
+      # Nodo y Erlang Cookie (opcional pero recomendado)
+      - RABBITMQ_ERLANG_COOKIE=secret_cookie_string
+    ports:
+      # Puerto de comunicación de RabbitMQ (AMQP)
+      - "5672:5672"
+      # Puerto de la Interfaz Web de Administración
+      - "15672:15672"
+    volumes:
+      # Persistencia de datos para no perder colas al reiniciar
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - rabbitmq_net
+
+volumes:
+  rabbitmq_data:
+
+networks:
+  rabbitmq_net:
+    driver: bridge

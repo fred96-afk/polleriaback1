@@ -8,6 +8,7 @@ using Models.Roles;
 using Models.Orders;
 using Models.Categories;
 using Models.Banners;
+using Models.Tables;
 
 namespace Business.Mappings;
 
@@ -41,5 +42,8 @@ public class MappingProfile : IRegister
         config.NewConfig<Banner, BannerResponse>();
         config.NewConfig<BannerRequest, Banner>()
             .Ignore(dest => dest.ImageUrl);
+
+        config.NewConfig<RestaurantTable, TableResponse>();
+        config.NewConfig<TableRequest, RestaurantTable>();
     }
 }

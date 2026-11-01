@@ -1,6 +1,9 @@
 using IBusiness;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using PusherServer;
 
 namespace Business;
@@ -10,16 +13,26 @@ public class PusherService : IPusherService
     private readonly Pusher? _pusher;
     private readonly ILogger<PusherService> _logger;
 
-    public PusherService(IConfiguration configuration, ILogger<PusherService> logger)
+    public PusherService(IOptions<PusherSettings> settings, ILogger<PusherService> logger)
     {
         _logger = logger;
+
         try
         {
-            var section = configuration.GetSection("Pusher");
-            var appId = section["AppId"];
-            var key = section["Key"];
-            var secret = section["Secret"];
-            var cluster = section["Cluster"] ?? "us2";
+            // PusherServer usa Newtonsoft.Json para serializar el payload.
+            // Forzamos camelCase para que los clientes (Flutter/Angular) reciban
+            // las propiedades con el mismo nombre que ya consumen.
+            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            var pusherSettings = settings.Value;
+            var appId = pusherSettings.AppId;
+            var key = pusherSettings.Key;
+            var secret = pusherSettings.Secret;
+            var cluster = string.IsNullOrWhiteSpace(pusherSettings.Cluster) ? "us2" : pusherSettings.Cluster;
 
             if (!string.IsNullOrWhiteSpace(appId) && !string.IsNullOrWhiteSpace(key) && !string.IsNullOrWhiteSpace(secret))
             {
@@ -32,10 +45,12 @@ public class PusherService : IPusherService
                         Cluster = cluster,
                         Encrypted = true
                     });
+
+                _logger.LogInformation("Cliente de Pusher inicializado en el clúster '{Cluster}'.", cluster);
             }
             else
             {
-                _logger.LogWarning("Configuración de Pusher incompleta o ausente.");
+                _logger.LogWarning("Configuración de Pusher incompleta o ausente. Las notificaciones en tiempo real estarán deshabilitadas.");
             }
         }
         catch (Exception ex)
@@ -43,6 +58,8 @@ public class PusherService : IPusherService
             _logger.LogError(ex, "Error al inicializar el cliente de Pusher.");
         }
     }
+
+    public bool IsConfigured => _pusher != null;
 
     public async Task TriggerAsync(string channel, string @event, object data)
     {

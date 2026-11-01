@@ -25,6 +25,7 @@ public class PolleriaDbContext : DbContext
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<Banner> Banners { get; set; }
+    public DbSet<RestaurantTable> Tables { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,6 +57,7 @@ public class PolleriaDbContext : DbContext
         OrderDetailSeed.Seed(modelBuilder);
         PaymentSeed.Seed(modelBuilder);
         InvoiceSeed.Seed(modelBuilder);
+        RestaurantTableSeed.Seed(modelBuilder);
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)

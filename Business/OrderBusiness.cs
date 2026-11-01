@@ -164,10 +164,14 @@ public class OrderBusiness(
         var orderResponse = MapToResponse(orderWithIncludes, orderWithIncludes.OrderDetails);
 
         // 5. Notificaciones (Pusher)
-        if (request.DeliveryUserId.HasValue || order.Status == OrderStatus.Pending)
+        try
         {
-            try { await pusherService.TriggerAsync("orders", "new-order", orderResponse); }
-            catch (Exception ex) { Console.WriteLine($"Error Pusher: {ex.Message}"); }
+            await pusherService.TriggerAsync("orders", "new-order", orderResponse);
+            await pusherService.TriggerAsync("orders", "order-created", orderResponse);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error Pusher al notificar nuevo pedido: {ex.Message}");
         }
 
         // 6. Facturación (NubeFact) si es POS

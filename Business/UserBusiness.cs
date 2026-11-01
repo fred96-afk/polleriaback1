@@ -32,7 +32,10 @@ public class UserBusiness(
         var entity = mapper.Map<User>(request);
         
         // Hashear la contraseña con salt+pepper antes de guardar
-        entity.PasswordHash = passwordHasher.HashPassword(request.Password);
+        if (!string.IsNullOrEmpty(request.Password))
+        {
+            entity.PasswordHash = passwordHasher.HashPassword(request.Password);
+        }
 
         // Generar token de verificación
         entity.VerificationToken = Guid.NewGuid().ToString("N");

@@ -184,6 +184,12 @@ public class PdfReportWorker : BackgroundService
             // Notificar que se completó
             await pusherService.TriggerAsync(channelName, "report-completed", completedNotification);
             await pusherService.TriggerAsync(channelName, "report-ready", completedNotification);
+
+            if (!string.Equals(channelName, "reports", StringComparison.OrdinalIgnoreCase))
+            {
+                await pusherService.TriggerAsync("reports", "report-completed", completedNotification);
+                await pusherService.TriggerAsync("reports", "report-ready", completedNotification);
+            }
         }
         catch (Exception ex)
         {
