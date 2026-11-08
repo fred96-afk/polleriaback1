@@ -28,7 +28,7 @@ public class NubeFactBusiness(
         var order = await orderRepository.GetByIdAsync(orderId);
         if (order == null) return new NubeFactResult(false, Error: "Pedido no encontrado.");
 
-        var details = await detailRepository.FindAsync(d => d.OrderId == orderId);
+        var details = await detailRepository.GetByOrderIdWithIncludesAsync(orderId);
         if (!details.Any()) return new NubeFactResult(false, Error: "El pedido no tiene productos.");
 
         var client = order.ClientId.HasValue ? await clientRepository.GetByIdAsync(order.ClientId.Value) : null;
@@ -72,7 +72,7 @@ public class NubeFactBusiness(
                 {
                     unidad_de_medida = "NIU",
                     codigo = $"P{d.ProductId}",
-                    descripcion = $"Producto {d.ProductId}",
+                    descripcion = d.Product?.Name ?? $"Producto {d.ProductId}",
                     cantidad = d.Quantity.ToString("F0"),
                     valor_unitario = itemValorUnitario.ToString("F2"),
                     precio_unitario = itemUnitPrice.ToString("F2"),
