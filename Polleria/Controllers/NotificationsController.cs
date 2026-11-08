@@ -32,6 +32,11 @@ public class NotificationsController(IPusherService pusherService) : ControllerB
                 {
                     name = "reports",
                     events = new[] { "report-queued", "report-processing", "report-completed", "report-ready", "report-failed" }
+                },
+                new
+                {
+                    name = "chat-{conversationId:N}",
+                    events = new[] { "assistant-message" }
                 }
             }
         });

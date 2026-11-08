@@ -79,6 +79,10 @@ builder.Services.AddScoped<IBannerBusiness, BannerBusiness>();
 builder.Services.AddScoped<ICatalogoBusiness, CatalogoBusiness>();
 builder.Services.AddScoped<IMercadoPagoBusiness, MercadoPagoBusiness>();
 builder.Services.AddScoped<INubeFactBusiness, NubeFactBusiness>();
+builder.Services.AddHttpClient<IChatBusiness, GeminiChatBusiness>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddHttpClient<IEmailService, EmailService>();
 builder.Services.AddSingleton<IPusherService, PusherService>();
