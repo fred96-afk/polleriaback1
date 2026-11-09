@@ -10,7 +10,7 @@ namespace Polleria.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = "Admin")]
+[Authorize]
 public class EmailController(
     IUserRepository userRepository,
     IOrderRepository orderRepository,
