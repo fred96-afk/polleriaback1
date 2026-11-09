@@ -18,7 +18,7 @@ public class GeminiChatBusiness(
     IConfiguration configuration,
     ILogger<GeminiChatBusiness> logger) : IChatBusiness
 {
-    private const string DefaultModel = "gemini-2.5-flash";
+    private const string DefaultModel = "gemini-1.5-flash";
     private const string PusherEvent = "assistant-message";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
@@ -123,7 +123,7 @@ public class GeminiChatBusiness(
         var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
         if (!response.IsSuccessStatusCode)
         {
-            logger.LogWarning("Gemini respondió con estado HTTP {StatusCode}.", (int)response.StatusCode);
+            logger.LogWarning("Gemini respondió con estado HTTP {StatusCode}: {ResponseBody}", (int)response.StatusCode, responseBody);
             throw new HttpRequestException(
                 HttpRequestError.HttpProtocolError,
                 "Gemini no pudo procesar el mensaje.",
