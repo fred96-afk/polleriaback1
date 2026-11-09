@@ -604,7 +604,8 @@ namespace Polleria.Migrations
                             BasePrice = 20.0m,
                             Description = "Un cuarto de pollo con papas y ensalada",
                             ImageUrl = "https://example.com/cuarto_pollo.jpg",
-                            Name = "Un Cuarto de Pollo"
+                            Name = "1/4 de Pollo a la Brasa",
+                            SalePrice = 12.0m
                         });
                 });
 
