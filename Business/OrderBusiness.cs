@@ -192,7 +192,7 @@ public class OrderBusiness(
                             order.Id.ToString(),
                             order.TotalAmount,
                             result.PdfUrl!,
-                            order.PaymentMethod?.ToString() ?? "Efectivo / POS",
+                            "Efectivo / POS",
                             order.Type.ToString(),
                             order.OrderDate);
                     }
@@ -283,7 +283,7 @@ public class OrderBusiness(
                             order.Client.Name,
                             order.Id.ToString(),
                             order.TotalAmount,
-                            paymentMethod: order.PaymentMethod?.ToString(),
+                            paymentMethod: "Pago en línea",
                             orderType: order.Type.ToString(),
                             orderDate: order.OrderDate);
                     }
