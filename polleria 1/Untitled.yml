@@ -4,8 +4,22 @@ info:
   seq: 1
 
 http:
-  method: GET
-  url: ""
+  method: POST
+  url: https://polleriaback1.onrender.com/api/chat/messages
+  body:
+    type: json
+    data: |-
+      {
+        "request": "POST /api/conversation",
+        "conversationId": "123e4567-e89b-12d3-a456-426614174000",
+        "message": "hola",
+        "history": [
+          {
+            "role": "user",
+            "content": "¿Cómo estás?"
+          }
+        ]
+      }
   auth: inherit
 
 settings:

@@ -258,7 +258,11 @@ public class OrderBusiness(
         var order = await orderRepository.GetByIdWithIncludesAsync(id);
         if (order == null) return false;
 
-        if (Enum.TryParse<PaymentStatus>(status, true, out var paymentStatus))
+        var normalizedStatus = status.Equals("Paid", StringComparison.OrdinalIgnoreCase)
+            ? nameof(PaymentStatus.Approved)
+            : status;
+
+        if (Enum.TryParse<PaymentStatus>(normalizedStatus, true, out var paymentStatus))
         {
             var shouldSendPurchaseEmail =
                 order.PaymentStatus != PaymentStatus.Approved &&

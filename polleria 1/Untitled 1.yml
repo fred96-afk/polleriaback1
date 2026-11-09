@@ -1,0 +1,27 @@
+info:
+  name: Untitled 1
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: https://polleriaback1.onrender.com/api/Email/test-templates
+  body:
+    type: json
+    data: |-
+      {
+        "apiKey": "L0hMosxCcMnEl-IT6mgCTdQAJsmz4JtOrH2OrTzPjZs",
+        "email": "lotahef719@macsnipe.com",
+        "scheduledDate": "10/11/2026 10:00 p. m.",
+        "estimatedDuration": "2 horas",
+        "details": "Prueba de aviso de mantenimiento",
+        "supportContact": "WhatsApp del local"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+  forwardAuthorizationHeader: false
