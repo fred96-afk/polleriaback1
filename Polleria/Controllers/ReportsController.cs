@@ -1,4 +1,7 @@
+using System.Security.Claims;
 using IBusiness;
+using IRepository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Reports;
 
@@ -6,10 +9,12 @@ namespace Polleria.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class ReportsController(
     IReportBusiness reportBusiness,
     IRabbitMQProducer rabbitMQProducer,
-    IReportStorageService reportStorageService) : ControllerBase
+    IReportStorageService reportStorageService,
+    IUserRepository userRepository) : ControllerBase
 {
     /// <summary>
     /// Encola la generación asíncrona de un reporte en formato Excel o PDF a través de RabbitMQ.
@@ -38,6 +43,18 @@ public class ReportsController(
             return BadRequest(new { message = "Tipo de reporte inválido. Valores aceptados: 'Excel' o 'Pdf'." });
         }
 
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized();
+        }
+
+        var user = await userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
         var normalizedType = reportType.Equals("Excel", StringComparison.OrdinalIgnoreCase) ? "Excel" : "Pdf";
         var message = new ReportQueueMessage
         {
@@ -46,7 +63,9 @@ public class ReportsController(
             StartDate = finalStartDate,
             EndDate = finalEndDate,
             Channel = string.IsNullOrWhiteSpace(request.Channel) ? "reports" : request.Channel,
-            UserId = request.UserId,
+            UserId = user.Id.ToString(),
+            UserEmail = user.Email,
+            UserName = user.Name,
             RequestedAt = DateTime.UtcNow
         };
 
@@ -93,8 +112,7 @@ public class ReportsController(
             StartDate = finalStartDate,
             EndDate = finalEndDate,
             ReportType = "Excel",
-            Channel = finalChannel,
-            UserId = request?.UserId
+            Channel = finalChannel
         });
     }
 
@@ -121,8 +139,7 @@ public class ReportsController(
             StartDate = finalStartDate,
             EndDate = finalEndDate,
             ReportType = "Pdf",
-            Channel = finalChannel,
-            UserId = request?.UserId
+            Channel = finalChannel
         });
     }
 

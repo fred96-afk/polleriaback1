@@ -184,7 +184,18 @@ public class OrderBusiness(
 
                 if (!string.IsNullOrWhiteSpace(orderResponse.CustomerEmail))
                 {
-                    try { await emailService.SendOrderInvoiceEmailAsync(orderResponse.CustomerEmail, orderResponse.CustomerName ?? "Cliente", order.Id.ToString(), order.TotalAmount, result.PdfUrl!); }
+                    try
+                    {
+                        await emailService.SendOrderInvoiceEmailAsync(
+                            orderResponse.CustomerEmail,
+                            orderResponse.CustomerName ?? "Cliente",
+                            order.Id.ToString(),
+                            order.TotalAmount,
+                            result.PdfUrl!,
+                            order.PaymentMethod?.ToString() ?? "Efectivo / POS",
+                            order.Type.ToString(),
+                            order.OrderDate);
+                    }
                     catch (Exception ex) { Console.WriteLine($"Error Email: {ex.Message}"); }
                 }
 
@@ -249,6 +260,11 @@ public class OrderBusiness(
 
         if (Enum.TryParse<PaymentStatus>(status, true, out var paymentStatus))
         {
+            var shouldSendPurchaseEmail =
+                order.PaymentStatus != PaymentStatus.Approved &&
+                paymentStatus == PaymentStatus.Approved &&
+                order.Type != OrderType.POS;
+
             order.PaymentStatus = paymentStatus;
             orderRepository.Update(order);
             var result = await orderRepository.SaveChangesAsync() > 0;
@@ -257,6 +273,25 @@ public class OrderBusiness(
             {
                 var response = MapToResponse(order, order.OrderDetails);
                 await pusherService.TriggerAsync("orders", "payment-updated", response);
+
+                if (shouldSendPurchaseEmail && !string.IsNullOrWhiteSpace(order.Client?.Email))
+                {
+                    try
+                    {
+                        await emailService.SendOrderInvoiceEmailAsync(
+                            order.Client.Email,
+                            order.Client.Name,
+                            order.Id.ToString(),
+                            order.TotalAmount,
+                            paymentMethod: order.PaymentMethod?.ToString(),
+                            orderType: order.Type.ToString(),
+                            orderDate: order.OrderDate);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error enviando confirmación de compra: {ex.Message}");
+                    }
+                }
             }
 
             return result;

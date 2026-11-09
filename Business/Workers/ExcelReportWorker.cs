@@ -190,6 +190,31 @@ public class ExcelReportWorker : BackgroundService
                 await pusherService.TriggerAsync("reports", "report-completed", completedNotification);
                 await pusherService.TriggerAsync("reports", "report-ready", completedNotification);
             }
+
+            // Enviar notificación por correo si se especificó el email del solicitante
+            if (!string.IsNullOrWhiteSpace(message.UserEmail))
+            {
+                try
+                {
+                    var emailService = scope.ServiceProvider.GetService<IEmailService>();
+                    if (emailService != null)
+                    {
+                        await emailService.SendReportReadyEmailAsync(
+                            to: message.UserEmail,
+                            adminName: message.UserName ?? "Administrador",
+                            reportTitle: $"Reporte de Ventas Excel ({message.StartDate:dd/MM/yyyy} - {message.EndDate:dd/MM/yyyy})",
+                            reportType: "Excel",
+                            downloadUrl: downloadUrl,
+                            startDate: message.StartDate,
+                            endDate: message.EndDate,
+                            generatedAt: DateTime.UtcNow);
+                    }
+                }
+                catch (Exception emailEx)
+                {
+                    _logger.LogWarning(emailEx, "ExcelReportWorker: No se pudo enviar el correo de reporte listo a '{Email}'.", message.UserEmail);
+                }
+            }
         }
         catch (Exception ex)
         {

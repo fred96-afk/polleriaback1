@@ -33,7 +33,7 @@ builder.Services.AddDbContext<PolleriaDbContext>(options =>
         b =>
         {
             b.MigrationsAssembly("Polleria");
-            b.CommandTimeout(60);
+            b.CommandTimeout(120);
         });
     options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
@@ -86,7 +86,7 @@ builder.Services.AddScoped<IMercadoPagoBusiness, MercadoPagoBusiness>();
 builder.Services.AddScoped<INubeFactBusiness, NubeFactBusiness>();
 builder.Services.AddHttpClient<IChatBusiness, GeminiChatBusiness>(client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(90);
+    client.Timeout = Timeout.InfiniteTimeSpan;
 });
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddHttpClient<IEmailService, EmailService>();

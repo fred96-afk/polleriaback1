@@ -8,5 +8,7 @@ public class ReportQueueMessage
     public DateTime EndDate { get; set; }
     public string? Channel { get; set; } = "reports";
     public string? UserId { get; set; }
+    public string? UserEmail { get; set; }
+    public string? UserName { get; set; }
     public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
 }

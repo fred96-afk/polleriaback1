@@ -21,7 +21,4 @@ public class QueueReportRequest
     [JsonPropertyName("channel")]
     public string? Channel { get; set; } = "reports";
 
-    [JsonProperty("userId")]
-    [JsonPropertyName("userId")]
-    public string? UserId { get; set; }
 }

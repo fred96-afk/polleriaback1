@@ -96,7 +96,7 @@ public class GeminiChatBusiness(
                 };
 
                 catalogJson = JsonSerializer.Serialize(catalog, JsonOptions);
-                cache?.Set(cacheKey, catalogJson, TimeSpan.FromMinutes(10));
+                cache?.Set(cacheKey, catalogJson, TimeSpan.FromHours(1));
             }
             catch (Exception ex)
             {
