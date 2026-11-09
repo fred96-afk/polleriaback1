@@ -18,7 +18,7 @@ public class GeminiChatBusiness(
     IConfiguration configuration,
     ILogger<GeminiChatBusiness> logger) : IChatBusiness
 {
-    private const string DefaultModel = "gemini-2.5-flash";
+    private const string DefaultModel = "gemini-3.8-flash";
     private const string PusherEvent = "assistant-message";
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
