@@ -25,11 +25,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddJsonFile("/etc/secrets/appsettings.json", optional: true, reloadOnChange: true);
 
 // --- 1. Database Connection ---
+builder.Services.AddMemoryCache();
 builder.Services.AddDbContext<PolleriaDbContext>(options =>
 {
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("connectionstringsomee"),
-        b => b.MigrationsAssembly("Polleria"));
+        b =>
+        {
+            b.MigrationsAssembly("Polleria");
+            b.CommandTimeout(60);
+        });
     options.ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.PendingModelChangesWarning));
 });
 
@@ -81,7 +86,7 @@ builder.Services.AddScoped<IMercadoPagoBusiness, MercadoPagoBusiness>();
 builder.Services.AddScoped<INubeFactBusiness, NubeFactBusiness>();
 builder.Services.AddHttpClient<IChatBusiness, GeminiChatBusiness>(client =>
 {
-    client.Timeout = TimeSpan.FromSeconds(30);
+    client.Timeout = TimeSpan.FromSeconds(90);
 });
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
 builder.Services.AddHttpClient<IEmailService, EmailService>();

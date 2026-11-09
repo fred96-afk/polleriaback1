@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using IBusiness;
 using IRepository;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Models.Chat;
@@ -16,7 +17,8 @@ public class GeminiChatBusiness(
     ISideRepository sideRepository,
     IPusherService pusherService,
     IConfiguration configuration,
-    ILogger<GeminiChatBusiness> logger) : IChatBusiness
+    ILogger<GeminiChatBusiness> logger,
+    IMemoryCache? cache = null) : IChatBusiness
 {
     private const string DefaultModel = "gemini-3.8-flash";
     private const string PusherEvent = "assistant-message";
@@ -57,34 +59,53 @@ public class GeminiChatBusiness(
             throw new ArgumentException("El historial contiene mensajes inválidos.", nameof(request));
         }
 
-        var products = await productRepository.SearchAsync(string.Empty);
-        var sides = await sideRepository.GetAllAsync();
-        var catalog = new
+        string catalogJson;
+        const string cacheKey = "Chat:CatalogJson";
+        if (cache is not null && cache.TryGetValue(cacheKey, out string? cached) && !string.IsNullOrEmpty(cached))
         {
-            productos = products
-                .OrderBy(product => product.Name)
-                .Select(product => new
+            catalogJson = cached;
+        }
+        else
+        {
+            try
+            {
+                var products = await productRepository.SearchAsync(string.Empty);
+                var sides = await sideRepository.GetAllAsync();
+                var catalog = new
                 {
-                    nombre = product.Name,
-                    descripcion = product.Description,
-                    categoria = product.Category?.Name,
-                    precio = product.IsOnSale ? product.SalePrice : product.BasePrice,
-                    precioRegular = product.BasePrice,
-                    precioOferta = product.IsOnSale ? product.SalePrice : null
-                }),
-            adicionales = sides
-                .OrderBy(side => side.Name)
-                .Select(side => new
-                {
-                    nombre = side.Name,
-                    descripcion = side.Description,
-                    precio = side.Price,
-                    tipo = side.Type.ToString()
-                })
-        };
+                    productos = products
+                        .OrderBy(product => product.Name)
+                        .Select(product => new
+                        {
+                            nombre = product.Name,
+                            descripcion = product.Description,
+                            categoria = product.Category?.Name,
+                            precio = product.IsOnSale ? product.SalePrice : product.BasePrice,
+                            precioRegular = product.BasePrice,
+                            precioOferta = product.IsOnSale ? product.SalePrice : null
+                        }),
+                    adicionales = sides
+                        .OrderBy(side => side.Name)
+                        .Select(side => new
+                        {
+                            nombre = side.Name,
+                            descripcion = side.Description,
+                            precio = side.Price,
+                            tipo = side.Type.ToString()
+                        })
+                };
+
+                catalogJson = JsonSerializer.Serialize(catalog, JsonOptions);
+                cache?.Set(cacheKey, catalogJson, TimeSpan.FromMinutes(10));
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Error al consultar la base de datos para el menú del chat. Se usará catálogo vacío de respaldo.");
+                catalogJson = "{\"productos\":[],\"adicionales\":[]}";
+            }
+        }
 
         var businessInfo = configuration["Chat:BusinessInfo"];
-        var catalogJson = JsonSerializer.Serialize(catalog, JsonOptions);
         var systemInstruction =
             $"Eres el asistente virtual de atención al cliente de la pollería. " +
             "Responde siempre en español, de forma amable y concisa. " +
