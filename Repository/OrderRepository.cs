@@ -51,6 +51,23 @@ public class OrderRepository(PolleriaDbContext context) : BaseRepository<Order>(
             .FirstOrDefaultAsync();
     }
 
+    public async Task<IEnumerable<Order>> GetPendingByTableNumberAsync(string tableNumber)
+    {
+        return await _dbSet
+            .Include(o => o.Client)
+            .Include(o => o.User)
+            .Include(o => o.DeliveryUser)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Product)
+            .Include(o => o.OrderDetails)
+                .ThenInclude(d => d.Side)
+            .Where(o =>
+                o.TableNumber == tableNumber &&
+                o.PaymentStatus == PaymentStatus.Pending &&
+                o.Status != OrderStatus.Cancelled)
+            .ToListAsync();
+    }
+
     public async Task<Order?> GetByIdWithIncludesAsync(int id)
     {
         return await _dbSet

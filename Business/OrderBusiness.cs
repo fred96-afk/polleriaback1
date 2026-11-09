@@ -226,6 +226,12 @@ public class OrderBusiness(
 
     public async Task<bool> UpdateStatusAsync(int id, string status)
     {
+        if (status.Equals("Paid", StringComparison.OrdinalIgnoreCase) ||
+            status.Equals(nameof(PaymentStatus.Approved), StringComparison.OrdinalIgnoreCase))
+        {
+            return await UpdatePaymentStatusAsync(id, nameof(PaymentStatus.Approved));
+        }
+
         var order = await orderRepository.GetByIdWithIncludesAsync(id);
         if (order == null) return false;
 
@@ -264,36 +270,60 @@ public class OrderBusiness(
 
         if (Enum.TryParse<PaymentStatus>(normalizedStatus, true, out var paymentStatus))
         {
-            var shouldSendPurchaseEmail =
-                order.PaymentStatus != PaymentStatus.Approved &&
-                paymentStatus == PaymentStatus.Approved &&
-                order.Type != OrderType.POS;
+            var ordersToUpdate = new List<Order> { order };
+            if (paymentStatus == PaymentStatus.Approved && !string.IsNullOrWhiteSpace(order.TableNumber))
+            {
+                var pendingTableOrders = await orderRepository.GetPendingByTableNumberAsync(order.TableNumber);
+                foreach (var tableOrder in pendingTableOrders)
+                {
+                    if (ordersToUpdate.All(existing => existing.Id != tableOrder.Id))
+                    {
+                        ordersToUpdate.Add(tableOrder);
+                    }
+                }
+            }
 
-            order.PaymentStatus = paymentStatus;
-            orderRepository.Update(order);
+            var changedOrders = ordersToUpdate
+                .Where(tableOrder => tableOrder.PaymentStatus != paymentStatus)
+                .ToList();
+            if (changedOrders.Count == 0) return true;
+
+            foreach (var tableOrder in changedOrders)
+            {
+                tableOrder.PaymentStatus = paymentStatus;
+                orderRepository.Update(tableOrder);
+            }
+
             var result = await orderRepository.SaveChangesAsync() > 0;
 
             if (result)
             {
-                var response = MapToResponse(order, order.OrderDetails);
-                await pusherService.TriggerAsync("orders", "payment-updated", response);
-
-                if (shouldSendPurchaseEmail && !string.IsNullOrWhiteSpace(order.Client?.Email))
+                foreach (var tableOrder in changedOrders)
                 {
-                    try
+                    var response = MapToResponse(tableOrder, tableOrder.OrderDetails);
+                    await pusherService.TriggerAsync("orders", "payment-updated", response);
+
+                    var shouldSendPurchaseEmail =
+                        paymentStatus == PaymentStatus.Approved &&
+                        tableOrder.Type != OrderType.POS &&
+                        !string.IsNullOrWhiteSpace(tableOrder.Client?.Email);
+                    if (shouldSendPurchaseEmail)
                     {
-                        await emailService.SendOrderInvoiceEmailAsync(
-                            order.Client.Email,
-                            order.Client.Name,
-                            order.Id.ToString(),
-                            order.TotalAmount,
-                            paymentMethod: "Pago en línea",
-                            orderType: order.Type.ToString(),
-                            orderDate: order.OrderDate);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine($"Error enviando confirmación de compra: {ex.Message}");
+                        try
+                        {
+                            await emailService.SendOrderInvoiceEmailAsync(
+                                tableOrder.Client!.Email!,
+                                tableOrder.Client.Name,
+                                tableOrder.Id.ToString(),
+                                tableOrder.TotalAmount,
+                                paymentMethod: "Pago en línea",
+                                orderType: tableOrder.Type.ToString(),
+                                orderDate: tableOrder.OrderDate);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error enviando confirmación de compra: {ex.Message}");
+                        }
                     }
                 }
             }
