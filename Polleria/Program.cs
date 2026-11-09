@@ -1,5 +1,4 @@
 using System.Text;
-using System.Threading.RateLimiting;
 using Business;
 using Business.Mappings;
 using Mapster;
@@ -158,20 +157,6 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApi();
-builder.Services.AddRateLimiter(options =>
-{
-    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.AddPolicy("EmailTemplateTests", context =>
-        RateLimitPartition.GetFixedWindowLimiter(
-            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-            _ => new FixedWindowRateLimiterOptions
-            {
-                PermitLimit = 1,
-                Window = TimeSpan.FromMinutes(15),
-                QueueLimit = 0,
-                AutoReplenishment = true
-            }));
-});
 
 var app = builder.Build();
 
@@ -190,7 +175,6 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 app.UseCors("AllowAngularApp");
-app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

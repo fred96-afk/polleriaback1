@@ -2,7 +2,6 @@ using IBusiness;
 using IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
 using Models;
 using Models.Email;
@@ -12,7 +11,6 @@ namespace Polleria.Controllers;
 [ApiController]
 [Route("api/[controller]")]
 [AllowAnonymous]
-[EnableRateLimiting("EmailTemplateTests")]
 public class EmailController(
     IProductRepository productRepository,
     IEmailService emailService,
@@ -22,11 +20,6 @@ public class EmailController(
     [HttpPost("test-templates")]
     public async Task<IActionResult> SendTemplateTests([FromBody] EmailTemplateTestRequest request)
     {
-        if (!emailSettings.Value.EnablePublicTemplateTest)
-        {
-            return NotFound();
-        }
-
         var recipient = emailSettings.Value.TemplateTestRecipient;
         if (string.IsNullOrWhiteSpace(recipient))
         {
