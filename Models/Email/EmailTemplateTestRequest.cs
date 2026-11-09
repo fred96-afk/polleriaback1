@@ -5,6 +5,15 @@ namespace Models.Email;
 public class EmailTemplateTestRequest
 {
     [Required]
+    [StringLength(200)]
+    public string ApiKey { get; set; } = string.Empty;
+
+    [Required]
+    [EmailAddress]
+    [StringLength(254)]
+    public string Email { get; set; } = string.Empty;
+
+    [Required]
     [StringLength(100)]
     public string ScheduledDate { get; set; } = string.Empty;
 

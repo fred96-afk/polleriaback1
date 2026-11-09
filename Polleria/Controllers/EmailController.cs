@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using IBusiness;
 using IRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -20,15 +22,18 @@ public class EmailController(
     [HttpPost("test-templates")]
     public async Task<IActionResult> SendTemplateTests([FromBody] EmailTemplateTestRequest request)
     {
-        var recipient = emailSettings.Value.TemplateTestRecipient;
-        if (string.IsNullOrWhiteSpace(recipient))
+        var configuredKey = emailSettings.Value.TemplateTestApiKey;
+        var suppliedKey = request.ApiKey;
+        if (string.IsNullOrWhiteSpace(configuredKey) ||
+            string.IsNullOrWhiteSpace(suppliedKey) ||
+            !CryptographicOperations.FixedTimeEquals(
+                Encoding.UTF8.GetBytes(configuredKey),
+                Encoding.UTF8.GetBytes(suppliedKey)))
         {
-            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
-            {
-                message = "El destinatario de prueba no está configurado en el servidor."
-            });
+            return Unauthorized(new { message = "La clave del endpoint de prueba no es válida." });
         }
 
+        var recipient = request.Email.Trim();
         var products = await productRepository.SearchAsync(string.Empty);
         var sampleProduct = products.OrderBy(product => product.Name).FirstOrDefault();
         if (sampleProduct == null)
