@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using IBusiness;
@@ -28,12 +29,6 @@ public class GeminiChatBusiness(
 
     public async Task<ChatResponse> SendMessageAsync(ChatRequest request, CancellationToken cancellationToken)
     {
-        var apiKey = configuration["Gemini:ApiKey"];
-        if (string.IsNullOrWhiteSpace(apiKey))
-        {
-            throw new InvalidOperationException("Gemini no está configurado. Configure Gemini:ApiKey.");
-        }
-
         if (request.ConversationId == Guid.Empty)
         {
             throw new ArgumentException("ConversationId debe ser un UUID válido.", nameof(request));
@@ -59,6 +54,27 @@ public class GeminiChatBusiness(
         }
 
         var products = await productRepository.SearchAsync(string.Empty);
+        if (IsPromotionQuestion(request.Message))
+        {
+            var currentOffers = products.Where(product => product.IsOnSale).ToList();
+            var promotionReply = currentOffers.Count == 0
+                ? "Hoy no tenemos platos en oferta."
+                : string.Join(
+                    "\n",
+                    currentOffers.Select(product =>
+                        product.Name.Equals("1/4 de Pollo a la Brasa", StringComparison.OrdinalIgnoreCase)
+                            ? $"Hoy tenemos 1/4 de pollo a la brasa a {product.SalePrice!.Value.ToString("0.##", CultureInfo.InvariantCulture)} soles."
+                            : $"Hoy tenemos {product.Name} a {product.SalePrice!.Value.ToString("0.##", CultureInfo.InvariantCulture)} soles."));
+
+            return await CreateChatResponseAsync(request.ConversationId, promotionReply);
+        }
+
+        var apiKey = configuration["Gemini:ApiKey"];
+        if (string.IsNullOrWhiteSpace(apiKey))
+        {
+            throw new InvalidOperationException("Gemini no está configurado. Configure Gemini:ApiKey.");
+        }
+
         var sides = await sideRepository.GetAllAsync();
         var catalog = new
         {
@@ -144,21 +160,42 @@ public class GeminiChatBusiness(
         }
 
         var reply = ReadReply(responseBody);
-        var channel = $"chat-{request.ConversationId:N}";
-        var createdAt = DateTimeOffset.UtcNow;
+        return await CreateChatResponseAsync(request.ConversationId, reply);
+    }
 
+    private async Task<ChatResponse> CreateChatResponseAsync(Guid conversationId, string reply)
+    {
+        var channel = $"chat-{conversationId:N}";
         if (pusherService.IsConfigured)
         {
             await pusherService.TriggerAsync(channel, PusherEvent, new
             {
-                conversationId = request.ConversationId,
+                conversationId,
                 role = "model",
                 message = reply,
-                createdAt
+                createdAt = DateTimeOffset.UtcNow
             });
         }
 
-        return new ChatResponse(request.ConversationId, reply, channel, PusherEvent);
+        return new ChatResponse(conversationId, reply, channel, PusherEvent);
+    }
+
+    private static bool IsPromotionQuestion(string message)
+    {
+        var normalized = message.Normalize(NormalizationForm.FormD);
+        var builder = new StringBuilder(normalized.Length);
+        foreach (var character in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(character) != UnicodeCategory.NonSpacingMark)
+            {
+                builder.Append(char.ToLowerInvariant(character));
+            }
+        }
+
+        var text = builder.ToString();
+        return text.Contains("oferta", StringComparison.Ordinal) ||
+               text.Contains("promocion", StringComparison.Ordinal) ||
+               text.Contains("descuento", StringComparison.Ordinal);
     }
 
     private static string ReadReply(string responseBody)

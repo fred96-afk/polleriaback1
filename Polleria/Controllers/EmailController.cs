@@ -1,83 +1,80 @@
-using System.Net.Mail;
 using IBusiness;
 using IRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.Extensions.Options;
+using Models;
 using Models.Email;
-using Models.Reports;
 
 namespace Polleria.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[AllowAnonymous]
+[EnableRateLimiting("EmailTemplateTests")]
 public class EmailController(
-    IUserRepository userRepository,
-    IOrderRepository orderRepository,
-    IInvoiceRepository invoiceRepository,
+    IProductRepository productRepository,
     IEmailService emailService,
-    IReportBusiness reportBusiness,
-    IReportStorageService reportStorageService,
+    IOptions<EmailSettings> emailSettings,
     ILogger<EmailController> logger) : ControllerBase
 {
     [HttpPost("test-templates")]
     public async Task<IActionResult> SendTemplateTests([FromBody] EmailTemplateTestRequest request)
     {
-        if (!MailAddress.TryCreate(request.Email, out var address))
+        if (!emailSettings.Value.EnablePublicTemplateTest)
         {
-            return BadRequest(new { message = "La dirección de correo no es válida." });
+            return NotFound();
         }
 
-        var users = await userRepository.GetAllAsync();
-        var sampleUser = users.FirstOrDefault(user => user.IsVerified);
-        if (sampleUser == null)
+        var recipient = emailSettings.Value.TemplateTestRecipient;
+        if (string.IsNullOrWhiteSpace(recipient))
         {
-            return Conflict(new { message = "No hay usuarios verificados en la base de datos para usar como datos de muestra." });
+            return StatusCode(StatusCodes.Status503ServiceUnavailable, new
+            {
+                message = "El destinatario de prueba no está configurado en el servidor."
+            });
         }
 
-        var sampleOrder = (await orderRepository.GetAllWithIncludesAsync()).FirstOrDefault();
-        if (sampleOrder == null)
+        var products = await productRepository.SearchAsync(string.Empty);
+        var sampleProduct = products.OrderBy(product => product.Name).FirstOrDefault();
+        if (sampleProduct == null)
         {
-            return Conflict(new { message = "No hay pedidos en la base de datos para usar como datos de muestra." });
+            return Conflict(new { message = "No hay productos en la base de datos para usar como datos de muestra." });
         }
 
-        var invoices = await invoiceRepository.FindAsync(invoice => invoice.OrderId == sampleOrder.Id);
-        var invoiceUrl = invoices.FirstOrDefault()?.PdfUrl;
-        var orderName = sampleOrder.Client?.Name ?? sampleUser.Name;
-        var orderDate = sampleOrder.OrderDate;
-        var startDate = orderDate.Date;
-        var endDate = orderDate.Date;
-        var reportBytes = await reportBusiness.GenerateSalesPdfAsync(new SalesReportRequest(startDate, endDate));
-        var reportFileName = $"EmailTemplateTest_{Guid.NewGuid():N}.pdf";
-        await reportStorageService.SaveReportAsync(reportFileName, reportBytes);
-        var reportUrl = $"{Request.Scheme}://{Request.Host}{reportStorageService.GetDownloadUrl(reportFileName)}";
+        const string sampleName = "Cliente de prueba";
+        const string sampleOrderId = "PRUEBA-001";
+        var samplePrice = sampleProduct.IsOnSale
+            ? sampleProduct.SalePrice!.Value
+            : sampleProduct.BasePrice;
+        var sampleDate = DateTime.UtcNow;
         var testToken = $"test-{Guid.NewGuid():N}";
 
         var sends = new (string Name, Func<Task> Send)[]
         {
-            ("creacion-de-cuenta", () => emailService.SendVerificationEmailAsync(address.Address, sampleUser.Name, testToken)),
-            ("recuperacion-de-cuenta", () => emailService.SendPasswordResetEmailAsync(address.Address, sampleUser.Name, testToken)),
+            ("creacion-de-cuenta", () => emailService.SendVerificationEmailAsync(recipient, sampleName, testToken)),
+            ("recuperacion-de-cuenta", () => emailService.SendPasswordResetEmailAsync(recipient, sampleName, testToken)),
             ("compra", () => emailService.SendOrderInvoiceEmailAsync(
-                address.Address,
-                orderName,
-                sampleOrder.Id.ToString(),
-                sampleOrder.TotalAmount,
-                invoiceUrl,
-                "Datos de prueba",
-                sampleOrder.Type.ToString(),
-                orderDate)),
+                recipient,
+                sampleName,
+                sampleOrderId,
+                samplePrice,
+                paymentMethod: "Datos de prueba",
+                orderType: "Pedido de prueba",
+                orderDate: sampleDate)),
             ("reporte-generado", () => emailService.SendReportReadyEmailAsync(
-                address.Address,
-                sampleUser.Name,
-                $"Reporte de ventas de prueba (pedido #{sampleOrder.Id})",
+                recipient,
+                "Administrador de prueba",
+                $"Reporte de prueba - {sampleProduct.Name}",
                 "PDF",
-                reportUrl,
-                startDate,
-                endDate,
-                DateTime.UtcNow)),
+                "https://example.com/reporte-de-prueba.pdf",
+                sampleDate.Date,
+                sampleDate.Date,
+                sampleDate)),
             ("mantenimiento", () => emailService.SendMaintenanceNoticeEmailAsync(
-                address.Address,
-                sampleUser.Name,
+                recipient,
+                sampleName,
                 request.ScheduledDate,
                 request.EstimatedDuration,
                 request.Details,
@@ -94,7 +91,7 @@ public class EmailController(
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Falló el correo de prueba {Template} para {Email}.", send.Name, address.Address);
+                logger.LogError(ex, "Falló el correo de prueba {Template}.", send.Name);
                 results.Add(new EmailTemplateSendResult(send.Name, false));
             }
         }
@@ -102,7 +99,6 @@ public class EmailController(
         var sentCount = results.Count(result => result.Sent);
         var response = new
         {
-            recipient = address.Address,
             sent = sentCount,
             failed = sends.Length - sentCount,
             results,
